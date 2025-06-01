@@ -70,6 +70,7 @@ class InvoiceApp(QMainWindow):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS invoices (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                invoice_number TEXT UNIQUE,  -- Přidáme unikátní číslo faktury
                 type TEXT,
                 recipient TEXT,
                 issuer TEXT,
@@ -78,7 +79,9 @@ class InvoiceApp(QMainWindow):
                 due_date TEXT,
                 amount_no_tax REAL,
                 tax REAL,
-                total REAL
+                total REAL,
+                status TEXT,  -- Přidáme status faktury
+                note TEXT  -- Přidáme poznámku
             )
         """)
 
@@ -97,6 +100,15 @@ class InvoiceApp(QMainWindow):
         """Načte faktury z databáze a zobrazí je v tabulce."""
         self.cursor.execute("SELECT * FROM invoices")
         rows = self.cursor.fetchall()
+        
+    
+        self.table.setColumnCount(13)  
+        self.table.setHorizontalHeaderLabels([
+            "ID", "Číslo faktury", "Typ", "Příjemce", "Výdejce", "Datum vyst.",
+            "Datum plnění", "Datum splat.", "Částka bez DPH", "DPH", "Celkem",
+            "Status", "Poznámka"
+        ])
+        
         self.table.setRowCount(len(rows))
         for row_idx, row in enumerate(rows):
             for col_idx, value in enumerate(row):
@@ -167,16 +179,6 @@ class InvoiceApp(QMainWindow):
             self.load_company_list()
 
     def delete_invoice(self):
-        """Smaže vybranou fakturu z databáze."""
-        selected_row = self.table.currentRow()
-        if selected_row >= 0:
-            invoice_id = self.table.item(selected_row, 0).text()
-            self.cursor.execute("DELETE FROM invoices WHERE id=?", (invoice_id,))
-            self.conn.commit()
-            self.load_invoices()
-
-####novy kod
-    def delete_invoice(self):
         """Smaže vybranou fakturu z databáze po potvrzení uživatelem."""
         selected_row = self.table.currentRow()
         if selected_row >= 0:
@@ -197,14 +199,15 @@ class InvoiceApp(QMainWindow):
                 print(f"Faktura ID {invoice_id} byla úspěšně smazána.")
 
 
-##### konec noveho kkodu 
     def add_invoice(self):
         """Otevře formulář pro přidání nové faktury a uloží ji do databáze."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Nová faktura")
         layout = QFormLayout()
 
-        # Formulářové prvky
+        invoice_number_input = QLineEdit()
+        layout.addRow(QLabel("Číslo faktury:"), invoice_number_input)
+
         type_box = QComboBox()
         type_box.addItems(["Přijatá", "Vydaná"])
         layout.addRow(QLabel("Typ faktury:"), type_box)
@@ -216,6 +219,13 @@ class InvoiceApp(QMainWindow):
         issuer_box = QComboBox()
         self.load_companies(issuer_box)
         layout.addRow(QLabel("Výdejce:"), issuer_box)
+
+        status_box = QComboBox()
+        status_box.addItems(["Čeká na platbu", "Zaplaceno", "Stornováno"])
+        layout.addRow(QLabel("Status faktury:"), status_box)
+
+        note_input = QLineEdit()
+        layout.addRow(QLabel("Poznámka:"), note_input)
 
         issue_date = QDateEdit()
         issue_date.setCalendarPopup(True)
@@ -243,23 +253,19 @@ class InvoiceApp(QMainWindow):
 
         # Funkce pro uložení faktury
         def save_invoice():
-            self.cursor.execute(
-                """
-                INSERT INTO invoices (type, recipient, issuer, issue_date, tax_date, due_date, amount_no_tax, tax, total)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-                (type_box.currentText(),
-                 recipient_box.currentText(),
-                 issuer_box.currentText(),
-                 issue_date.date().toString("yyyy-MM-dd"),
-                 tax_date.date().toString("yyyy-MM-dd"),
-                 due_date.date().toString("yyyy-MM-dd"),
-                 float(
-                    amount_input.text()),
-                    float(
-                    tax_input.text()),
-                    float(
-                    total_input.text())))
+            self.cursor.execute("""
+                INSERT INTO invoices (invoice_number, type, recipient, issuer, issue_date, tax_date, due_date, amount_no_tax, tax, total, status, note)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                invoice_number_input.text(), type_box.currentText(),
+                recipient_box.currentText(), issuer_box.currentText(),
+                issue_date.date().toString("yyyy-MM-dd"),
+                tax_date.date().toString("yyyy-MM-dd"),
+                due_date.date().toString("yyyy-MM-dd"),
+                float(amount_input.text()), float(tax_input.text()),
+                float(total_input.text()), status_box.currentText(),
+                note_input.text()
+            ))
             self.conn.commit()
             self.load_invoices()  # Aktualizace tabulky
             dialog.accept()  # Zavření okna
@@ -271,6 +277,7 @@ class InvoiceApp(QMainWindow):
 
         dialog.setLayout(layout)
         dialog.exec()
+
 
     def edit_invoice(self):
         """Umožní upravit vybranou fakturu."""
@@ -284,56 +291,69 @@ class InvoiceApp(QMainWindow):
             if not invoice_data:
                 return
 
-            # Vytvoření dialogového okna pro úpravu faktury
+            # Vytvoření dialogového okna
             dialog = QDialog(self)
             dialog.setWindowTitle("Upravit fakturu")
             layout = QFormLayout()
 
+            invoice_number_input = QLineEdit(invoice_data[1])  # Číslo faktury
+            layout.addRow(QLabel("Číslo faktury:"), invoice_number_input)
+
             type_box = QComboBox()
             type_box.addItems(["Přijatá", "Vydaná"])
-            type_box.setCurrentText(invoice_data[1])
+            type_box.setCurrentText(invoice_data[2])
             layout.addRow(QLabel("Typ faktury:"), type_box)
 
-            recipient_input = QLineEdit(invoice_data[2])
+            recipient_input = QLineEdit(invoice_data[3])
             layout.addRow(QLabel("Příjemce:"), recipient_input)
 
-            issuer_input = QLineEdit(invoice_data[3])
+            issuer_input = QLineEdit(invoice_data[4])
             layout.addRow(QLabel("Výdejce:"), issuer_input)
+
+            status_box = QComboBox()
+            status_box.addItems(["Čeká na platbu", "Zaplaceno", "Stornováno"])
+            status_box.setCurrentText(invoice_data[11])  # Status faktury
+            layout.addRow(QLabel("Status faktury:"), status_box)
+
+            note_input = QLineEdit(invoice_data[12])  # Poznámka k faktuře
+            layout.addRow(QLabel("Poznámka:"), note_input)
 
             issue_date = QDateEdit()
             issue_date.setCalendarPopup(True)
-            issue_date.setDate(QDate.fromString(invoice_data[4], "yyyy-MM-dd"))
+            issue_date.setDate(QDate.fromString(invoice_data[5], "yyyy-MM-dd"))
             layout.addRow(QLabel("Datum vystavení:"), issue_date)
 
             tax_date = QDateEdit()
             tax_date.setCalendarPopup(True)
-            tax_date.setDate(QDate.fromString(invoice_data[5], "yyyy-MM-dd"))
+            tax_date.setDate(QDate.fromString(invoice_data[6], "yyyy-MM-dd"))
             layout.addRow(QLabel("Datum plnění:"), tax_date)
 
             due_date = QDateEdit()
             due_date.setCalendarPopup(True)
-            due_date.setDate(QDate.fromString(invoice_data[6], "yyyy-MM-dd"))
+            due_date.setDate(QDate.fromString(invoice_data[7], "yyyy-MM-dd"))
             layout.addRow(QLabel("Datum splatnosti:"), due_date)
 
-            amount_input = QLineEdit(str(invoice_data[7]))
+            amount_input = QLineEdit(str(invoice_data[8]))
             layout.addRow(QLabel("Částka bez DPH:"), amount_input)
 
-            tax_input = QLineEdit(str(invoice_data[8]))
+            tax_input = QLineEdit(str(invoice_data[9]))
             layout.addRow(QLabel("Částka DPH:"), tax_input)
 
-            total_input = QLineEdit(str(invoice_data[9]))
+            total_input = QLineEdit(str(invoice_data[10]))
             layout.addRow(QLabel("Celková částka:"), total_input)
 
             # Funkce pro uložení změn
             def save_changes():
                 self.cursor.execute("""
                     UPDATE invoices 
-                    SET type=?, recipient=?, issuer=?, issue_date=?, tax_date=?, due_date=?, amount_no_tax=?, tax=?, total=? 
+                    SET invoice_number=?, type=?, recipient=?, issuer=?, issue_date=?, tax_date=?, due_date=?, amount_no_tax=?, tax=?, total=?, status=?, note=? 
                     WHERE id=?
                 """, (
-                    type_box.currentText(), recipient_input.text(), issuer_input.text(),
-                    issue_date.date().toString("yyyy-MM-dd"), tax_date.date().toString("yyyy-MM-dd"), due_date.date().toString("yyyy-MM-dd"),
-                    float(amount_input.text()), float(tax_input.text()), float(total_input.text()), invoice_id
+                    invoice_number_input.text(), type_box.currentText(),
+                    recipient_input.text(), issuer_input.text(),
+                    issue_date.date().toString("yyyy-MM-dd"), tax_date.date().toString("yyyy-MM-dd"),
+                    due_date.date().toString("yyyy-MM-dd"), float(amount_input.text()), float(tax_input.text()),
+                    float(total_input.text()), status_box.currentText(), note_input.text(), invoice_id
                 ))
                 self.conn.commit()
                 self.load_invoices()  # Aktualizace tabulky
