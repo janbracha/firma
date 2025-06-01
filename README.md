@@ -1,0 +1,2 @@
+# firma
+firmeni  soft
