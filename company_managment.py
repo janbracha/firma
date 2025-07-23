@@ -182,25 +182,4 @@ class CompanyManagementWindow(QMainWindow):
             QMessageBox.information(self, "Úspěch", f"Firma '{company_name}' byla smazána!")
 
 
-    @staticmethod
-    def fetch_companies():
-        """Načte všechny firmy z databáze správně jako seznam tuple."""
-        conn = connect()
-        cursor = conn.cursor()
-        cursor.execute("SELECT name, ico, dic, bank, contact, address FROM companies")
-        data = cursor.fetchall()  # Vrací seznam tuple [(název, ico, dic, bank, contact, adresa), ...]
-        conn.close()
-        return data
-
-    @staticmethod
-    def fetch_company_names():
-        """Načte názvy firem z databáze pro výběr v rozbalovacím seznamu."""
-        conn = connect()
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM companies")
-        data = [row[0] for row in cursor.fetchall()]  # Vrací seznam názvů firem
-        conn.close()
-        return data
-
-
 

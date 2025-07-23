@@ -61,22 +61,3 @@ def add_company(name, ico, dic, bank, contact, address):
     conn.close()
     print(f"✅ Firma '{name}' byla úspěšně přidána!")
     return True
-
-
-    """Přidá firmu do databáze pouze pokud ještě neexistuje."""
-    conn = connect()
-    cursor = conn.cursor()
-
-    # Zkontrolujeme, zda firma už existuje
-    cursor.execute("SELECT COUNT(*) FROM companies WHERE name=?", (name,))
-    if cursor.fetchone()[0] > 0:
-        print(f"⚠️ Firma '{name}' už existuje v databázi! Přidání zrušeno.")
-        conn.close()
-        return False  # Vrací False, pokud firma existuje
-
-    # Pokud firma neexistuje, přidáme ji do databáze
-    cursor.execute("INSERT INTO companies (name, ico, address) VALUES (?, ?, ?)", (name, ico, address))
-    conn.commit()
-    conn.close()
-    print(f"✅ Firma '{name}' byla úspěšně přidána!")
-    return True  # Vrací True, pokud firma byla úspěšně přidána

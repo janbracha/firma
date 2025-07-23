@@ -16,8 +16,8 @@ class CashJournalWindow(QMainWindow):
         layout = QVBoxLayout()
 
         # Tabulka pokladního deníku
-        self.table = QTableWidget(0, 6)
-        self.table.setHorizontalHeaderLabels(["Typ", "Datum", "Jméno", "Částka", "Poznámka", "Zůstatek"])
+        self.table = QTableWidget(0, 7)
+        self.table.setHorizontalHeaderLabels(["ID", "Typ", "Datum", "Jméno", "Částka", "Poznámka", "Zůstatek"])
         layout.addWidget(self.table)
 
         self.load_cash_journal()
@@ -35,6 +35,9 @@ class CashJournalWindow(QMainWindow):
         self.edit_button.clicked.connect(self.edit_entry)
         layout.addWidget(self.edit_button)
 
+        self.initial_balance_button = QPushButton("Nastavit počáteční stav")
+        self.initial_balance_button.clicked.connect(self.set_initial_balance)
+        layout.addWidget(self.initial_balance_button)
 
         central_widget.setLayout(layout)
 
@@ -75,8 +78,6 @@ class CashJournalWindow(QMainWindow):
         conn.close()
 
         self.table.setRowCount(len(rows))
-        self.table.setColumnCount(7)
-        self.table.setHorizontalHeaderLabels(["ID", "Typ", "Datum", "Jméno", "Částka", "Poznámka", "Zůstatek"])
 
         for row_idx, row in enumerate(rows):
             for col_idx, value in enumerate(row):
@@ -87,6 +88,8 @@ class CashJournalWindow(QMainWindow):
                     item.setBackground(QBrush(QColor("#C8E6C9")))  # Světle zelené pozadí
                 elif row[1] == "Výdaj":  # Pokud je typ Výdaj
                     item.setBackground(QBrush(QColor("#FFCC80")))  # Světle oranžové pozadí
+                elif row[1] == "Počáteční stav":  # Pokud je typ Počáteční stav
+                    item.setBackground(QBrush(QColor("#E1BEE7")))  # Světle magenta pozadí
                 
                 # Zvýraznění aktuálního stavu pokladny (poslední řádek)
                 if col_idx == 6 and row_idx == len(rows) - 1:  
@@ -130,39 +133,39 @@ class CashJournalWindow(QMainWindow):
         save_button = QPushButton("Uložit záznam")
         layout.addWidget(save_button)
 
-
         def save_entry():
             """Uloží nový záznam do databáze a správně aktualizuje zůstatek."""
-            conn = connect()
-            cursor = conn.cursor()
+            try:
+                conn = connect()
+                cursor = conn.cursor()
 
-            # Získání posledního známého zůstatku (nejnovější transakce)
-            cursor.execute("SELECT balance FROM cash_journal ORDER BY id DESC LIMIT 1")
-            last_balance = cursor.fetchone()
-            last_balance = last_balance[0] if last_balance else 0  # Pokud není žádný záznam, počáteční stav je 0
+                # Získání posledního známého zůstatku (nejnovější transakce)
+                cursor.execute("SELECT balance FROM cash_journal ORDER BY id DESC LIMIT 1")
+                last_balance = cursor.fetchone()
+                last_balance = last_balance[0] if last_balance else 0  # Pokud není žádný záznam, počáteční stav je 0
 
-            # Výpočet nového zůstatku
-            amount = float(amount_input.text())
-            new_balance = last_balance + amount if type_box.currentText() == "Příjem" else last_balance - amount
+                # Výpočet nového zůstatku - podporuje čárku i tečku jako desetinnou čárku
+                amount_text = amount_input.text().replace(",", ".")
+                amount = float(amount_text)
+                new_balance = last_balance + amount if type_box.currentText() == "Příjem" else last_balance - amount
 
-            # Vložení nové transakce s aktualizovaným zůstatkem
-            cursor.execute("""
-                INSERT INTO cash_journal (type, date, person, amount, note, balance)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (type_box.currentText(), date_input.date().toString("yyyy-MM-dd"), person_input.text(),
-                amount, note_input.text(), new_balance))
+                # Vložení nové transakce s aktualizovaným zůstatkem
+                cursor.execute("""
+                    INSERT INTO cash_journal (type, date, person, amount, note, balance)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (type_box.currentText(), date_input.date().toString("yyyy-MM-dd"), person_input.text(),
+                    amount, note_input.text(), new_balance))
 
-            conn.commit()
-            conn.close()
+                conn.commit()
+                conn.close()
 
-            self.load_cash_journal()
-            QMessageBox.information(self, "Úspěch", "Záznam byl úspěšně přidán!")
-            dialog.accept()
-
-
-
-
-
+                self.load_cash_journal()
+                QMessageBox.information(self, "Úspěch", "Záznam byl úspěšně přidán!")
+                dialog.accept()
+            except ValueError:
+                QMessageBox.warning(self, "Chyba", "Částka musí být číslo!")
+            except Exception as e:
+                QMessageBox.critical(self, "Chyba", f"Nastala chyba: {str(e)}")
 
         save_button.clicked.connect(save_entry)
         dialog.setLayout(layout)
@@ -177,14 +180,23 @@ class CashJournalWindow(QMainWindow):
 
         entry_id = self.table.item(selected_row, 0).text()  # Získání ID z prvního sloupce
 
-        conn = connect()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM cash_journal WHERE id=?", (entry_id,))
-        conn.commit()
-        conn.close()
+        # Potvrzení smazání
+        reply = QMessageBox.question(self, "Potvrzení", 
+                                   "Opravdu chcete smazat vybraný záznam?",
+                                   QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        
+        if reply == QMessageBox.StandardButton.Yes:
+            try:
+                conn = connect()
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM cash_journal WHERE id=?", (entry_id,))
+                conn.commit()
+                conn.close()
 
-        self.load_cash_journal()
-        QMessageBox.information(self, "Úspěch", f"Záznam ID {entry_id} byl úspěšně smazán!")
+                self.load_cash_journal()
+                QMessageBox.information(self, "Úspěch", f"Záznam byl úspěšně smazán!")
+            except Exception as e:
+                QMessageBox.critical(self, "Chyba", f"Nastala chyba při mazání: {str(e)}")
 
     def set_initial_balance(self):
         """Otevře dialog pro zadání počátečního stavu pokladny."""
@@ -200,18 +212,25 @@ class CashJournalWindow(QMainWindow):
 
         def save_initial_balance():
             """Uloží počáteční stav pokladny do databáze."""
-            conn = connect()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO cash_journal (type, date, person, amount, note, balance) 
-                VALUES ('Počáteční stav', ?, 'Systém', ?, 'Zadáno uživatelem', ?)
-            """, (QDate.currentDate().toString("yyyy-MM-dd"), balance_input.text(), balance_input.text()))
-            conn.commit()
-            conn.close()
+            try:
+                initial_amount_text = balance_input.text().replace(",", ".")
+                initial_amount = float(initial_amount_text)
+                conn = connect()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO cash_journal (type, date, person, amount, note, balance) 
+                    VALUES ('Počáteční stav', ?, 'Systém', ?, 'Zadáno uživatelem', ?)
+                """, (QDate.currentDate().toString("yyyy-MM-dd"), initial_amount, initial_amount))
+                conn.commit()
+                conn.close()
 
-            self.load_cash_journal()
-            QMessageBox.information(self, "Úspěch", "Počáteční stav pokladny byl uložen!")
-            dialog.accept()
+                self.load_cash_journal()
+                QMessageBox.information(self, "Úspěch", "Počáteční stav pokladny byl uložen!")
+                dialog.accept()
+            except ValueError:
+                QMessageBox.warning(self, "Chyba", "Částka musí být číslo!")
+            except Exception as e:
+                QMessageBox.critical(self, "Chyba", f"Nastala chyba: {str(e)}")
 
         save_button.clicked.connect(save_initial_balance)
         dialog.setLayout(layout)
@@ -224,8 +243,9 @@ class CashJournalWindow(QMainWindow):
             QMessageBox.warning(self, "Chyba", "Nebyl vybrán žádný záznam!")
             return
 
-        # Získání hodnot z tabulky
-        entry_data = [self.table.item(selected_row, col).text() for col in range(self.table.columnCount())]
+        # Získání hodnot z tabulky (ID je skryté, ale stále přístupné)
+        entry_id = self.table.item(selected_row, 0).text()  # ID z prvního sloupce
+        entry_data = [self.table.item(selected_row, col).text() for col in range(1, self.table.columnCount())]
 
         dialog = QDialog(self)
         dialog.setWindowTitle("Upravit záznam")
@@ -233,21 +253,21 @@ class CashJournalWindow(QMainWindow):
 
         type_box = QComboBox()
         type_box.addItems(["Příjem", "Výdaj", "Počáteční stav"])
-        type_box.setCurrentText(entry_data[0])
+        type_box.setCurrentText(entry_data[0])  # Typ je na indexu 0 (po ID)
         layout.addRow(QLabel("Typ:"), type_box)
 
         date_input = QDateEdit()
         date_input.setCalendarPopup(True)
-        date_input.setDate(QDate.fromString(entry_data[1], "yyyy-MM-dd"))
+        date_input.setDate(QDate.fromString(entry_data[1], "yyyy-MM-dd"))  # Datum na indexu 1
         layout.addRow(QLabel("Datum:"), date_input)
 
-        person_input = QLineEdit(entry_data[2])
+        person_input = QLineEdit(entry_data[2])  # Jméno na indexu 2
         layout.addRow(QLabel("Jméno:"), person_input)
 
-        amount_input = QLineEdit(entry_data[3])
+        amount_input = QLineEdit(entry_data[3])  # Částka na indexu 3
         layout.addRow(QLabel("Částka:"), amount_input)
 
-        note_input = QLineEdit(entry_data[4])
+        note_input = QLineEdit(entry_data[4])  # Poznámka na indexu 4
         layout.addRow(QLabel("Poznámka:"), note_input)
 
         save_button = QPushButton("Uložit změny")
@@ -255,21 +275,28 @@ class CashJournalWindow(QMainWindow):
 
         def save_changes():
             """Uloží upravený záznam do databáze."""
-            conn = connect()
-            cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE cash_journal
-                SET type=?, date=?, person=?, amount=?, note=? 
-                WHERE date=? AND person=? AND amount=? AND note=?
-            """, (type_box.currentText(), date_input.date().toString("yyyy-MM-dd"), person_input.text(), 
-                amount_input.text(), note_input.text(), entry_data[1], entry_data[2], entry_data[3], entry_data[4]))
+            try:
+                amount_text = amount_input.text().replace(",", ".")
+                amount = float(amount_text)
+                conn = connect()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE cash_journal
+                    SET type=?, date=?, person=?, amount=?, note=? 
+                    WHERE id=?
+                """, (type_box.currentText(), date_input.date().toString("yyyy-MM-dd"), person_input.text(), 
+                    amount, note_input.text(), entry_id))
 
-            conn.commit()
-            conn.close()
+                conn.commit()
+                conn.close()
 
-            self.load_cash_journal()
-            QMessageBox.information(self, "Úspěch", "Záznam byl úspěšně upraven!")
-            dialog.accept()
+                self.load_cash_journal()
+                QMessageBox.information(self, "Úspěch", "Záznam byl úspěšně upraven!")
+                dialog.accept()
+            except ValueError:
+                QMessageBox.warning(self, "Chyba", "Částka musí být číslo!")
+            except Exception as e:
+                QMessageBox.critical(self, "Chyba", f"Nastala chyba: {str(e)}")
 
         save_button.clicked.connect(save_changes)
         dialog.setLayout(layout)

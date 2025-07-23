@@ -1,9 +1,8 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QFormLayout, QLabel, QComboBox, QMessageBox, QTableWidget, QTableWidgetItem
-from PyQt6.QtCore import QDate
+from PyQt6.QtCore import QDate, Qt
 from database import connect
 import random
 from fuel_management import FuelManagementWindow  # Import správy tankování
-from PyQt6.QtCore import Qt
 
 
 
@@ -32,15 +31,43 @@ class TripCalculationWindow(QMainWindow):
         self.year_box = QComboBox()
         current_year = QDate.currentDate().year()
         self.year_box.addItems([str(y) for y in range(current_year, current_year - 10, -1)])
+        self.year_box.currentIndexChanged.connect(self.update_fuel_display)
         form_layout.addRow(QLabel("Rok:"), self.year_box)
 
-        # Množství paliva za měsíc
+        # Množství paliva za měsíc - s výrazným stylem
         self.monthly_fuel_label = QLabel("Množství paliva za zvolený měsíc: N/A")
-        form_layout.addRow(QLabel("Množství paliva za zvolený měsíc:"), self.monthly_fuel_label)
+        self.monthly_fuel_label.setStyleSheet("""
+            QLabel {
+                background-color: #FFE082;
+                padding: 8px;
+                border: 2px solid #FF8F00;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 14px;
+                color: #E65100;
+            }
+        """)
+        form_layout.addRow(QLabel(""), self.monthly_fuel_label)
+
+        # Předpokládaný počet kilometrů
+        self.estimated_km_label = QLabel("Předpokládaný průměrný počet kilometrů: N/A")
+        self.estimated_km_label.setStyleSheet("""
+            QLabel {
+                background-color: #C8E6C9;
+                padding: 8px;
+                border: 2px solid #4CAF50;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 14px;
+                color: #2E7D32;
+            }
+        """)
+        form_layout.addRow(QLabel(""), self.estimated_km_label)
 
         # Výběr vozidla
         self.vehicle_box = QComboBox()
         self.load_vehicles()
+        self.vehicle_box.currentIndexChanged.connect(self.update_fuel_display)
         form_layout.addRow(QLabel("Vozidlo:"), self.vehicle_box)
 
         layout.addLayout(form_layout)
@@ -55,6 +82,9 @@ class TripCalculationWindow(QMainWindow):
         layout.addWidget(self.manage_fuel_button)
 
         central_widget.setLayout(layout)
+
+        # Počáteční načtení dat
+        self.update_fuel_display()
 
     def load_vehicles(self):
         """Načte seznam vozidel z databáze."""
@@ -73,8 +103,6 @@ class TripCalculationWindow(QMainWindow):
         self.trip_table.setHorizontalHeaderLabels(["Datum", "Řidič", "Start", "Cíl", "Firma", "Vzdálenost (km)"])
 
         month_name = self.month_box.currentText()
-        self.month_box.currentIndexChanged.connect(self.update_fuel_display)
-
         year = int(self.year_box.currentText())
         selected_vehicle = self.vehicle_box.currentText()
 
@@ -87,86 +115,97 @@ class TripCalculationWindow(QMainWindow):
         conn = connect()
         cursor = conn.cursor()
 
-
         cursor.execute("""
             SELECT SUM(fuel_amount) FROM fuel_tankings
             WHERE vehicle=? AND substr(date, 4, 2)=? AND substr(date, 7, 4)=?
         """, (selected_vehicle, f"{month:02}", str(year)))
 
         fuel_quantity = cursor.fetchone()[0] or 0  # Pokud není tankování, nastavíme 0
-        conn.close()
-
-        conn = connect()
-        cursor = conn.cursor()
+        
+        # Získání spotřeby vozidla
         cursor.execute("SELECT consumption FROM cars WHERE registration=?", (selected_vehicle,))
-        consumption = cursor.fetchone()[0]
-        conn.close()
-
-        # Výpočet celkového počtu km
-        total_km = (fuel_quantity / consumption) * 100 if consumption else 0
-        print(f"Výpočet km: {fuel_quantity} litrů / {consumption} * 100 = {total_km} km")
-
-
-        # Načtení destinací a řidičů
-        conn = connect()
-        cursor = conn.cursor()
+        consumption_result = cursor.fetchone()
+        consumption = consumption_result[0] if consumption_result else 0
+        
+        # Načtení destinací a řidičů z databáze
         cursor.execute("SELECT start, destination, company, distance FROM destinations")
         destinations = cursor.fetchall()
 
         cursor.execute("SELECT first_name, last_name FROM drivers")
         drivers = cursor.fetchall()
+        
         conn.close()
+
+        if not drivers:
+            QMessageBox.warning(self, "Chyba", "V databázi nejsou žádní řidiči!")
+            return
+            
+        if not destinations:
+            QMessageBox.warning(self, "Chyba", "V databázi nejsou žádné destinace!")
+            return
+
+        # Výpočet celkového počtu km z paliva
+        total_km = (fuel_quantity / consumption) * 100 if consumption > 0 else 0
+        
+        if total_km <= 0:
+            QMessageBox.warning(self, "Chyba", "Není dostatek paliva pro generování jízd!")
+            return
 
         trips = []
         remaining_km = total_km
         days_used = set()
         days_in_month = QDate(year, month, 1).daysInMonth()
 
-        # Generování jízd rovnoměrně do měsíce
-        while remaining_km > 0 and len(days_used) < days_in_month:
-            destination = random.choice(destinations)
+        # Generování jízd - každá destinace tam a zpět
+        for destination in destinations:
+            if remaining_km <= 0 or len(days_used) >= days_in_month:
+                break
+                
             driver = random.choice(drivers)
             trip_distance = destination[3]  # Vzdálenost jedné cesty
             round_trip_distance = trip_distance * 2  # Celková vzdálenost tam i zpět
-            print(f"Zbývající km před jízdou: {remaining_km}")
 
+            if remaining_km < round_trip_distance:
+                # Pokud nezbylo dost km, použijeme zbývající km
+                trip_distance = remaining_km / 2
 
-            if remaining_km - round_trip_distance < 0:
-                print(f"Po jízdě: zbývá {remaining_km} km, aktuální vzdálenost jízdy {round_trip_distance} km")
-
-                break
-
-            # Výběr volného dne (rovnoměrné rozložení jízd)
+            # Výběr volného dne
             available_days = set(range(1, days_in_month + 1)) - days_used
             if not available_days:
-                break
+                available_days = set(range(1, days_in_month + 1))  # Znovu použijeme dny
+                
             trip_day = random.choice(list(available_days))
             days_used.add(trip_day)
             trip_date = QDate(year, month, trip_day).toString("dd.MM.yyyy")
 
-            trips.append({
+            # Jízda tam
+            trip_tam = {
                 "datum": trip_date,
                 "řidič": f"{driver[0]} {driver[1]}",
                 "start": destination[0],
                 "cíl": destination[1],
                 "firma": destination[2],
-                "vzdálenost": trip_distance,
+                "vzdálenost": int(trip_distance),
                 "vozidlo": selected_vehicle,
                 "měsíc": month_name,
                 "rok": str(year)
-            })
+            }
+            trips.append(trip_tam)
 
-            trips.append({
+            # Jízda zpět (může být jiný řidič)
+            driver_zpet = random.choice(drivers)
+            trip_zpet = {
                 "datum": trip_date,
-                "řidič": f"{driver[0]} {driver[1]}",
+                "řidič": f"{driver_zpet[0]} {driver_zpet[1]}",
                 "start": destination[1],  # Zpáteční cesta
                 "cíl": destination[0],
                 "firma": destination[2],
-                "vzdálenost": trip_distance,
+                "vzdálenost": int(trip_distance),
                 "vozidlo": selected_vehicle,
                 "měsíc": month_name,
                 "rok": str(year)
-            })
+            }
+            trips.append(trip_zpet)
 
             remaining_km -= round_trip_distance
 
@@ -174,68 +213,44 @@ class TripCalculationWindow(QMainWindow):
         trip_summary = "\n".join([f"{trip['datum']} | {trip['řidič']} ({trip['vozidlo']}): {trip['start']} → {trip['cíl']} ({trip['vzdálenost']} km, Firma: {trip['firma']})" for trip in trips])
 
         # Vytvoření tabulky
-
         self.trip_table.setRowCount(len(trips))
-
-        print(f"Celkový počet vygenerovaných jízd: {len(trips)}")
-
         self.trip_table.setHorizontalHeaderLabels(["Datum", "Řidič", "Start", "Cíl", "Firma", "Vzdálenost (km)"])
-        self.trip_table.setSortingEnabled(True)  # Povolení řazení sloupců
-    
-  
-        self.trip_table.sortItems(0, Qt.SortOrder(0))  # 0 znamená vzestupné řazení (Ascending)
-        self.trip_table.resizeRowsToContents()  # Automatické přizpůsobení řádků
-        self.trip_table.repaint()  # Vynutíme překreslení tabulky
-        self.trip_table.update()  # Vynutíme aktualizaci tabulky
-        self.trip_table.repaint()  # Překreslíme obsah tabulky
-
-
-
-
-
-        # Naplnění tabulky daty
-      
-
-        for row_idx, trip in enumerate(trips):
-            print(f"Přidávám do tabulky: řádek {row_idx}, datum: {trip['datum']}, vzdálenost: {trip['vzdálenost']}")
-
-            if not all(trip.values()):  # Pokud nějaká hodnota chybí, neukládat do tabulky
-                print(f"Varování: Chybějící data v záznamu {trip}")
-                
+        
+        # NEJPRVE naplníme tabulku daty, POTOM povolíme řazení
+        actual_row = 0
+        for trip in trips:
+            # Kontrola základních údajů (neměly by být None nebo prázdné stringy)
+            if not trip.get("datum") or not trip.get("řidič") or not trip.get("start") or not trip.get("cíl"):
                 continue
 
+            self.trip_table.setItem(actual_row, 0, QTableWidgetItem(str(trip["datum"])))
+            self.trip_table.setItem(actual_row, 1, QTableWidgetItem(str(trip["řidič"])))
+            self.trip_table.setItem(actual_row, 2, QTableWidgetItem(str(trip["start"])))
+            self.trip_table.setItem(actual_row, 3, QTableWidgetItem(str(trip["cíl"])))
+            self.trip_table.setItem(actual_row, 4, QTableWidgetItem(str(trip["firma"] or "")))
+            self.trip_table.setItem(actual_row, 5, QTableWidgetItem(str(trip["vzdálenost"])))
+            actual_row += 1
 
-            self.trip_table.setItem(row_idx, 0, QTableWidgetItem(trip["datum"]))
-            for row in range(self.trip_table.rowCount()):
-                for col in range(self.trip_table.columnCount()):
-                    item = self.trip_table.item(row, col)
-                    print(f"Řádek {row}, Sloupec {col}: {item.text() if item else '⚠️ NIC'}")
+        # Upravení počtu řádků tabulky na skutečný počet záznamů
+        self.trip_table.setRowCount(actual_row)
+        
+        # TEPRVE NYNÍ povolíme řazení a seřadíme podle data
+        self.trip_table.setSortingEnabled(True)  # Povolení řazení sloupců
+        self.trip_table.sortItems(0, Qt.SortOrder.AscendingOrder)  # Řazení podle data vzestupně
 
-
-
-
-            self.trip_table.setItem(row_idx, 1, QTableWidgetItem(trip["řidič"]))
-            self.trip_table.setItem(row_idx, 2, QTableWidgetItem(trip["start"]))
-            self.trip_table.setItem(row_idx, 3, QTableWidgetItem(trip["cíl"]))
-            self.trip_table.setItem(row_idx, 4, QTableWidgetItem(trip["firma"]))
-            self.trip_table.setItem(row_idx, 5, QTableWidgetItem(str(trip["vzdálenost"])))
-            self.trip_table.resizeRowsToContents()  # Automatické přizpůsobení řádků
-            self.trip_table.repaint()  # Vynutíme překreslení tabulky
-
-
-        # Zobrazení tabulky v okně
+        # Zobrazení tabulky v novém okně
         self.trip_window = QWidget()
         self.trip_window.setWindowTitle("Vygenerovaná Kniha jízd")
         layout = QVBoxLayout()
-        self.trip_table = QTableWidget()  # Správná inicializace
-        self.trip_table.setColumnCount(6)
-        self.trip_table.setHorizontalHeaderLabels(["Datum", "Řidič", "Start", "Cíl", "Firma", "Vzdálenost (km)"])
-        layout.addWidget(self.trip_table)  # Přidání tabulky do okna
+        layout.addWidget(self.trip_table)
         self.trip_window.setLayout(layout)
         self.trip_window.show()
-
-        self.trip_window.setLayout(layout)
-        self.trip_window.show()
+        
+        # Informace o vygenerovaných jízdách
+        total_generated_km = sum(trip['vzdálenost'] for trip in trips)
+        QMessageBox.information(self, "Kniha jízd vygenerována", 
+                              f"Vygenerováno {len(trips)} jízd pro {len(set(trip['cíl'] for trip in trips))//2} destinací.\n"
+                              f"Celkový počet km: {total_generated_km} (z {int(total_km)} dostupných km)")
 
     def show_fuel_management(self):
         """Otevře okno pro správu tankování."""
@@ -243,9 +258,10 @@ class TripCalculationWindow(QMainWindow):
         self.fuel_management_window.show()
 
     def update_fuel_display(self):
-        print("update_fuel_display() byla zavolána!")
-
         """Načte množství paliva ihned po změně měsíce."""
+        if not hasattr(self, 'month_box') or not hasattr(self, 'year_box') or not hasattr(self, 'vehicle_box'):
+            return  # Pokud ještě nejsou inicializované komponenty
+            
         month_name = self.month_box.currentText()
         year = int(self.year_box.currentText())
         selected_vehicle = self.vehicle_box.currentText()
@@ -254,9 +270,6 @@ class TripCalculationWindow(QMainWindow):
         months = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen",
                 "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"]
         month = months.index(month_name) + 1
-
-        # Debug výpis, abychom viděli, co se děje:
-        print(f"Načítám palivo pro vozidlo: {selected_vehicle}, měsíc: {month}, rok: {year}")
 
         # Sečtení tankování z databáze
         conn = connect()
@@ -268,13 +281,25 @@ class TripCalculationWindow(QMainWindow):
         fuel_quantity = cursor.fetchone()[0] or 0
         conn.close()
 
-        print(f"Výsledek SQL dotazu: {fuel_quantity} litrů")  # Debug výpis
-
         # Zobrazení množství paliva na stránce
-        print(f"Aktualizuji GUI: {fuel_quantity} litrů")
-
         self.monthly_fuel_label.setText(f"Množství paliva za zvolený měsíc: {fuel_quantity} litrů")
-        self.monthly_fuel_label.repaint()  # Vynutíme okamžité překreslení
-        print(f"Text štítku po změně: {self.monthly_fuel_label.text()}")
+
+        # Výpočet předpokládaného počtu kilometrů
+        if selected_vehicle and fuel_quantity > 0:
+            # Získání spotřeby vozidla
+            conn = connect()
+            cursor = conn.cursor()
+            cursor.execute("SELECT consumption FROM cars WHERE registration=?", (selected_vehicle,))
+            consumption_result = cursor.fetchone()
+            conn.close()
+            
+            if consumption_result:
+                consumption = consumption_result[0]
+                estimated_km = (fuel_quantity / consumption) * 100 if consumption > 0 else 0
+                self.estimated_km_label.setText(f"Předpokládaný průměrný počet kilometrů: {estimated_km:.1f} km")
+            else:
+                self.estimated_km_label.setText("Předpokládaný průměrný počet kilometrů: Vozidlo nenalezeno")
+        else:
+            self.estimated_km_label.setText("Předpokládaný průměrný počet kilometrů: N/A")
 
 
