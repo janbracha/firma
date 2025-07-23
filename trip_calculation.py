@@ -16,6 +16,76 @@ class TripCalculationWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout()
 
+        # Použití stejného stylu jako v hlavní aplikaci
+        self.setStyleSheet("""
+            * {
+                font-family: 'Inter', 'Roboto', sans-serif;
+                color: #2C3E50;
+            }
+
+            QWidget {
+                background: #F2F2F2;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            QPushButton {
+                background-color: #6C85A3;
+                color: white;
+                font-size: 16px;
+                padding: 12px;
+                border-radius: 18px;
+                border: none;
+            }
+
+            QPushButton:hover {
+                background-color: #5A7393;
+            }
+
+            QLabel {
+                background: transparent;
+                border: none;
+                color: #2C3E50;
+                font-size: 14px;
+            }
+
+            QComboBox {
+                background-color: white;
+                border: 2px solid #E0E0E0;
+                border-radius: 8px;
+                padding: 8px;
+                color: #2C3E50;
+            }
+
+            QComboBox:focus {
+                border-color: #6C85A3;
+            }
+
+            QTableWidget {
+                background-color: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                gridline-color: #E0E0E0;
+            }
+
+            QTableWidget::item {
+                padding: 8px;
+                border-bottom: 1px solid #E0E0E0;
+            }
+
+            QTableWidget::item:selected {
+                background-color: #6C85A3;
+                color: white;
+            }
+
+            QHeaderView::section {
+                background-color: #6C85A3;
+                color: white;
+                padding: 10px;
+                border: none;
+                font-weight: bold;
+            }
+        """)
+
         # Formulář pro zadání vstupních údajů
         form_layout = QFormLayout()
 
@@ -34,32 +104,32 @@ class TripCalculationWindow(QMainWindow):
         self.year_box.currentIndexChanged.connect(self.update_fuel_display)
         form_layout.addRow(QLabel("Rok:"), self.year_box)
 
-        # Množství paliva za měsíc - s výrazným stylem
+        # Množství paliva za měsíc - s výrazným stylem ale v souladu s hlavním tématem
         self.monthly_fuel_label = QLabel("Množství paliva za zvolený měsíc: N/A")
         self.monthly_fuel_label.setStyleSheet("""
             QLabel {
-                background-color: #FFE082;
-                padding: 8px;
-                border: 2px solid #FF8F00;
-                border-radius: 5px;
+                background-color: #E3F2FD;
+                padding: 12px;
+                border: 2px solid #6C85A3;
+                border-radius: 8px;
                 font-weight: bold;
                 font-size: 14px;
-                color: #E65100;
+                color: #2C3E50;
             }
         """)
         form_layout.addRow(QLabel(""), self.monthly_fuel_label)
 
-        # Předpokládaný počet kilometrů
+        # Předpokládaný počet kilometrů - v souladu s hlavním tématem
         self.estimated_km_label = QLabel("Předpokládaný průměrný počet kilometrů: N/A")
         self.estimated_km_label.setStyleSheet("""
             QLabel {
-                background-color: #C8E6C9;
-                padding: 8px;
-                border: 2px solid #4CAF50;
-                border-radius: 5px;
+                background-color: #F3E5F5;
+                padding: 12px;
+                border: 2px solid #6C85A3;
+                border-radius: 8px;
                 font-weight: bold;
                 font-size: 14px;
-                color: #2E7D32;
+                color: #2C3E50;
             }
         """)
         form_layout.addRow(QLabel(""), self.estimated_km_label)

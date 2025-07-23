@@ -15,6 +15,32 @@ class TripBookWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout()
 
+        # Použití stejného stylu jako v hlavní aplikaci
+        self.setStyleSheet("""
+            * {
+                font-family: 'Inter', 'Roboto', sans-serif;
+                color: #2C3E50;
+            }
+
+            QWidget {
+                background: #F2F2F2;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            QPushButton {
+                background-color: #6C85A3;
+                color: white;
+                font-size: 16px;
+                padding: 12px;
+                border-radius: 18px;
+                border: none;
+            }
+
+            QPushButton:hover {
+                background-color: #5A7393;
+            }
+        """)
+
         # Prostor nahoře, aby tlačítka byla dole
         layout.addStretch()
 

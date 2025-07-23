@@ -1,0 +1,12 @@
+📄 TESTOVACÍ DOKUMENT
+
+Tento soubor je určen pouze pro testování funkcionality nahrávání dokumentů.
+
+Můžete ho použít pro otestování:
+✓ Nahrávání textových dokumentů
+✓ Drag & drop funkcionality  
+✓ Zobrazení v náhledu
+✓ Smazání dokumentů
+
+Datum vytvoření: 23. 7. 2025
+Systém: Firma - Správa faktur

@@ -31,10 +31,8 @@ def update_company(old_name, updated_data):
             WHERE name=?
         """, (*updated_data, old_name))
         conn.commit()
-        print(f"✅ Firma '{old_name}' byla aktualizována!")
         return True
     except Exception as e:
-        print(f"❌ Chyba při aktualizaci firmy: {e}")
         return False
     finally:
         conn.close()
@@ -47,7 +45,6 @@ def add_company(name, ico, dic, bank, contact, address):
     # Kontrola duplicit
     cursor.execute("SELECT COUNT(*) FROM companies WHERE name=?", (name,))
     if cursor.fetchone()[0] > 0:
-        print(f"⚠️ Firma '{name}' už existuje v databázi! Přidání zrušeno.")
         conn.close()
         return False
 
@@ -59,5 +56,4 @@ def add_company(name, ico, dic, bank, contact, address):
 
     conn.commit()
     conn.close()
-    print(f"✅ Firma '{name}' byla úspěšně přidána!")
     return True

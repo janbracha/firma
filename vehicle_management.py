@@ -11,6 +11,76 @@ class VehicleManagementWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout()
 
+        # Použití stejného stylu jako v hlavní aplikaci
+        self.setStyleSheet("""
+            * {
+                font-family: 'Inter', 'Roboto', sans-serif;
+                color: #2C3E50;
+            }
+
+            QWidget {
+                background: #F2F2F2;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            QPushButton {
+                background-color: #6C85A3;
+                color: white;
+                font-size: 16px;
+                padding: 12px;
+                border-radius: 18px;
+                border: none;
+            }
+
+            QPushButton:hover {
+                background-color: #5A7393;
+            }
+
+            QTableWidget {
+                background-color: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                gridline-color: #E0E0E0;
+            }
+
+            QTableWidget::item {
+                padding: 8px;
+                border-bottom: 1px solid #E0E0E0;
+            }
+
+            QTableWidget::item:selected {
+                background-color: #6C85A3;
+                color: white;
+            }
+
+            QHeaderView::section {
+                background-color: #6C85A3;
+                color: white;
+                padding: 10px;
+                border: none;
+                font-weight: bold;
+            }
+
+            QLabel {
+                background: transparent;
+                border: none;
+                color: #2C3E50;
+                font-size: 14px;
+            }
+
+            QLineEdit {
+                background-color: white;
+                border: 2px solid #E0E0E0;
+                border-radius: 8px;
+                padding: 8px;
+                color: #2C3E50;
+            }
+
+            QLineEdit:focus {
+                border-color: #6C85A3;
+            }
+        """)
+
         # Tabulka vozidel
         self.table = QTableWidget(0, 4)
         self.table.setHorizontalHeaderLabels(["Registrační značka", "Typ vozidla", "Vlastník", "Spotřeba (l/100 km)"])

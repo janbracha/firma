@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QMessageBox, QFileDialog
 )
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTableWidget, QPushButton, QTableWidgetItem
+from document_management_window import DocumentManagementWindow
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -56,6 +57,10 @@ class InvoiceManagementWindow(QMainWindow):
         self.export_all_button = QPushButton("Exportovat všechny faktury do PDF")
         self.export_all_button.clicked.connect(self.export_all_to_pdf)
         layout.addWidget(self.export_all_button)
+
+        self.documents_button = QPushButton("📎 Správa dokumentů")
+        self.documents_button.clicked.connect(self.show_documents)
+        layout.addWidget(self.documents_button)
 
 
         central_widget.setLayout(layout)
@@ -390,4 +395,27 @@ class InvoiceManagementWindow(QMainWindow):
         if confirmation == QMessageBox.StandardButton.Yes:
             delete_invoice(invoice_id)
             self.load_invoices()
+
+    def show_documents(self):
+        """Zobrazí správu dokumentů pro vybranou fakturu"""
+        selected_row = self.table.currentRow()
+        if selected_row < 0:
+            # Pokud není vybrána faktura, zobrazí všechny dokumenty typu "invoices"
+            self.documents_window = DocumentManagementWindow(
+                related_table="invoices",
+                related_id=None,
+                title_suffix="Všechny faktury"
+            )
+        else:
+            # Zobrazí dokumenty pro konkrétní fakturu
+            invoice_id = self.table.item(selected_row, 0).text()
+            invoice_number = self.table.item(selected_row, 1).text()
+            
+            self.documents_window = DocumentManagementWindow(
+                related_table="invoices",
+                related_id=int(invoice_id),
+                title_suffix=f"Faktura {invoice_number}"
+            )
+        
+        self.documents_window.show()
 
