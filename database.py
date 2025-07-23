@@ -309,6 +309,180 @@ def create_tables():
         )
     """)
 
+    # Tabulka pro hmotný majetek
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS assets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            category TEXT,
+            description TEXT,
+            purchase_price REAL,
+            purchase_date TEXT,
+            depreciation_method TEXT,
+            useful_life INTEGER,
+            total_depreciation REAL DEFAULT 0,
+            book_value REAL,
+            status TEXT DEFAULT 'Aktivní',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Tabulka pro kalendář a termíny
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS calendar_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            event_type TEXT,
+            event_date TEXT,
+            event_time TEXT,
+            end_date TEXT,
+            end_time TEXT,
+            status TEXT DEFAULT 'Plánováno',
+            reminder_minutes INTEGER DEFAULT 15,
+            reminder_sent BOOLEAN DEFAULT 0,
+            recurring BOOLEAN DEFAULT 0,
+            recurring_type TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Tabulka produktů ve skladu
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS warehouse_products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            category TEXT,
+            description TEXT,
+            unit TEXT,
+            price REAL,
+            min_stock INTEGER DEFAULT 0,
+            current_stock INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Tabulka skladových pohybů
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS warehouse_movements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id INTEGER,
+            movement_type TEXT,
+            quantity INTEGER,
+            price REAL,
+            date TEXT,
+            description TEXT,
+            user_id TEXT,
+            FOREIGN KEY (product_id) REFERENCES warehouse_products (id)
+        )
+    """)
+    
+    # Tabulka zaměstnanců
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS employees (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT NOT NULL,
+            last_name TEXT NOT NULL,
+            position TEXT,
+            department TEXT,
+            hire_date TEXT,
+            birth_date TEXT,
+            phone TEXT,
+            email TEXT,
+            address TEXT,
+            salary REAL,
+            active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Tabulka mezd
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS employee_salaries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER,
+            month TEXT,
+            base_salary REAL,
+            overtime REAL,
+            bonus REAL,
+            deductions REAL,
+            net_salary REAL,
+            paid_date TEXT,
+            FOREIGN KEY (employee_id) REFERENCES employees (id)
+        )
+    """)
+    
+    # Tabulka docházky
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS employee_attendance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER,
+            date TEXT,
+            start_time TEXT,
+            end_time TEXT,
+            break_time INTEGER DEFAULT 0,
+            overtime INTEGER DEFAULT 0,
+            absence_type TEXT,
+            notes TEXT,
+            FOREIGN KEY (employee_id) REFERENCES employees (id)
+        )
+    """)
+    
+    # Tabulka servisních záznamů
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS service_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            asset_type TEXT,
+            asset_id INTEGER,
+            asset_name TEXT,
+            service_type TEXT,
+            description TEXT,
+            technician TEXT,
+            cost REAL,
+            status TEXT DEFAULT 'Plánováno',
+            scheduled_date TEXT,
+            completed_date TEXT,
+            next_service_date TEXT,
+            notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Tabulka servisních plánů
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS service_schedules (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            asset_type TEXT,
+            asset_id INTEGER,
+            service_type TEXT,
+            interval_days INTEGER,
+            last_service_date TEXT,
+            next_service_date TEXT,
+            active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Tabulka náhradních dílů
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS service_parts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            service_record_id INTEGER,
+            part_name TEXT,
+            part_number TEXT,
+            quantity INTEGER,
+            unit_price REAL,
+            total_price REAL,
+            supplier TEXT,
+            FOREIGN KEY (service_record_id) REFERENCES service_records (id)
+        )
+    """)
+
 
 
     conn.commit()
