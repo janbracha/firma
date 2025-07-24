@@ -487,6 +487,18 @@ class ServiceMaintenanceWindow(QMainWindow):
             if value_label:
                 value_label.setText(value)
 
+    def get_vehicles(self):
+        """Vrátí seznam vozidel pro dialogy"""
+        try:
+            cursor = self.db.cursor()
+            cursor.execute("SELECT id, registration, type FROM cars ORDER BY registration")
+            vehicles = cursor.fetchall()
+            # Vrací seznam tuplu (id, "SPZ - Typ")
+            return [(vehicle[0], f"{vehicle[1]} - {vehicle[2]}") for vehicle in vehicles]
+        except Exception as e:
+            QMessageBox.critical(self, "Chyba", f"Chyba při načítání vozidel: {str(e)}")
+            return []
+
     def add_service(self):
         """Přidá nový servisní záznam"""
         dialog = ServiceDialog()
@@ -599,6 +611,15 @@ class ServiceMaintenanceWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Chyba", f"Chyba při správě certifikátů: {str(e)}")
 
+    def load_schedules(self):
+        """Načte plány údržby (placeholder metoda)"""
+        # Tato metoda bude implementována v budoucí verzi
+        pass
+
+    def load_records(self):
+        """Načte záznamy (alias pro load_service_records)"""
+        self.load_service_records()
+
     def closeEvent(self, event):
         """Uzavře databázové připojení při zavření okna"""
         if hasattr(self, 'db'):
@@ -612,41 +633,49 @@ class ServiceDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Nový servisní záznam")
-        self.setFixedSize(600, 700)
+        self.setFixedSize(700, 800)  # Zvětšeno pro lepší zobrazení
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit, QTextEdit, QDoubleSpinBox, QDateEdit, QComboBox {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus, QTextEdit:focus, QDoubleSpinBox:focus, QDateEdit:focus, QComboBox:focus {
-                border-color: #e74c3c;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #e74c3c, stop:1 #c0392b);
+                    stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #ec7063, stop:1 #e74c3c);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         
@@ -746,42 +775,50 @@ class MaintenanceScheduleDialog(QDialog):
     def __init__(self, vehicles, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Naplánovat údržbu")
-        self.setFixedSize(500, 450)
+        self.setFixedSize(600, 550)  # Zvětšeno pro lepší zobrazení
         self.vehicles = vehicles
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QComboBox, QSpinBox, QTextEdit, QLineEdit, QDateEdit {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QComboBox:focus, QSpinBox:focus, QTextEdit:focus, QLineEdit:focus, QDateEdit:focus {
-                border-color: #3498db;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #3498db, stop:1 #2980b9);
+                    stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #5dade2, stop:1 #3498db);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         
@@ -858,42 +895,50 @@ class MalfunctionReportDialog(QDialog):
     def __init__(self, vehicles, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Nahlásit poruchu")
-        self.setFixedSize(500, 500)
+        self.setFixedSize(600, 600)  # Zvětšeno pro lepší zobrazení
         self.vehicles = vehicles
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QComboBox, QSpinBox, QTextEdit, QLineEdit, QDateEdit {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QComboBox:focus, QSpinBox:focus, QTextEdit:focus, QLineEdit:focus, QDateEdit:focus {
-                border-color: #e74c3c;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #e74c3c, stop:1 #c0392b);
+                    stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #ec7063, stop:1 #e74c3c);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         
@@ -969,44 +1014,51 @@ class ServicePlanDialog(QDialog):
     def __init__(self, vehicles, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Servisní plán")
-        self.setFixedSize(800, 600)
+        self.setFixedSize(900, 700)  # Zvětšeno pro lepší zobrazení
         self.vehicles = vehicles
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QTableWidget {
-                border: 2px solid #e1e8ed;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
                 background: white;
-                gridline-color: #e1e8ed;
+                gridline-color: rgba(108, 133, 163, 0.2);
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #e1e8ed;
+                padding: 12px;
+                border-bottom: 1px solid rgba(108, 133, 163, 0.2);
+                min-height: 25px;
             }
             QTableWidget::item:selected {
-                background-color: #3498db;
+                background-color: #9b59b6;
                 color: white;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #3498db, stop:1 #2980b9);
+                    stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 10px;
-                border-radius: 6px;
+                padding: 12px 24px;
+                border-radius: 8px;
                 font-weight: bold;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #5dade2, stop:1 #3498db);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         
@@ -1084,43 +1136,50 @@ class ServiceCostsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Náklady na servis")
-        self.setFixedSize(700, 500)
+        self.setFixedSize(800, 600)  # Zvětšeno pro lepší zobrazení
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QTableWidget {
-                border: 2px solid #e1e8ed;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
                 background: white;
-                gridline-color: #e1e8ed;
+                gridline-color: rgba(108, 133, 163, 0.2);
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #e1e8ed;
+                padding: 12px;
+                border-bottom: 1px solid rgba(108, 133, 163, 0.2);
+                min-height: 25px;
             }
             QTableWidget::item:selected {
-                background-color: #f39c12;
+                background-color: #9b59b6;
                 color: white;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f39c12, stop:1 #e67e22);
+                    stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 10px;
-                border-radius: 6px;
+                padding: 12px 24px;
+                border-radius: 8px;
                 font-weight: bold;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f7dc6f, stop:1 #f39c12);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         
@@ -1212,27 +1271,31 @@ class CertificateManagementDialog(QDialog):
     def __init__(self, vehicles, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Správa certifikátů")
-        self.setFixedSize(800, 600)
+        self.setFixedSize(900, 700)  # Zvětšeno pro lepší zobrazení
         self.vehicles = vehicles
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QTableWidget {
-                border: 2px solid #e1e8ed;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
                 background: white;
-                gridline-color: #e1e8ed;
+                gridline-color: rgba(108, 133, 163, 0.2);
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #e1e8ed;
+                padding: 12px;
+                border-bottom: 1px solid rgba(108, 133, 163, 0.2);
+                min-height: 25px;
             }
             QTableWidget::item:selected {
                 background-color: #9b59b6;
@@ -1243,13 +1306,16 @@ class CertificateManagementDialog(QDialog):
                     stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 10px;
-                border-radius: 6px;
+                padding: 12px 24px;
+                border-radius: 8px;
                 font-weight: bold;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #bb8fce, stop:1 #9b59b6);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         

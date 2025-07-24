@@ -652,46 +652,55 @@ class EmployeeDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Nový zaměstnanec")
-        self.setFixedSize(600, 650)
+        self.setFixedSize(700, 750)  # Zvětšeno pro lepší zobrazení
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit, QTextEdit, QDoubleSpinBox, QDateEdit {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus, QTextEdit:focus, QDoubleSpinBox:focus, QDateEdit:focus {
-                border-color: #9b59b6;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #bb76c6, stop:1 #9b59b6);
             }
             QCheckBox {
-                font-size: 12px;
+                font-size: 15px;
                 color: #2c3e50;
                 spacing: 8px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
         """)
         
@@ -704,63 +713,83 @@ class EmployeeDialog(QDialog):
         
         # Formulář
         form_layout = QFormLayout()
-        form_layout.setSpacing(10)
+        form_layout.setSpacing(15)
         
         # Osobní údaje
         personal_label = QLabel("📝 Osobní údaje")
-        personal_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #9b59b6; margin-top: 10px;")
+        personal_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #9b59b6; margin-top: 10px;")
         form_layout.addRow(personal_label)
         
         self.first_name_edit = QLineEdit()
         self.first_name_edit.setPlaceholderText("Křestní jméno")
+        self.first_name_edit.setMinimumHeight(35)
+        self.first_name_edit.setMinimumWidth(250)
         form_layout.addRow("Jméno:", self.first_name_edit)
         
         self.last_name_edit = QLineEdit()
         self.last_name_edit.setPlaceholderText("Příjmení")
+        self.last_name_edit.setMinimumHeight(35)
+        self.last_name_edit.setMinimumWidth(250)
         form_layout.addRow("Příjmení:", self.last_name_edit)
         
         self.birth_date_edit = QDateEdit(QDate.currentDate().addYears(-25))
         self.birth_date_edit.setCalendarPopup(True)
+        self.birth_date_edit.setMinimumHeight(35)
+        self.birth_date_edit.setMinimumWidth(250)
         form_layout.addRow("Datum narození:", self.birth_date_edit)
         
         # Kontaktní údaje
         contact_label = QLabel("📞 Kontaktní údaje")
-        contact_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #9b59b6; margin-top: 15px;")
+        contact_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #9b59b6; margin-top: 15px;")
         form_layout.addRow(contact_label)
         
         self.phone_edit = QLineEdit()
         self.phone_edit.setPlaceholderText("+420 123 456 789")
+        self.phone_edit.setMinimumHeight(35)
+        self.phone_edit.setMinimumWidth(250)
         form_layout.addRow("Telefon:", self.phone_edit)
         
         self.email_edit = QLineEdit()
         self.email_edit.setPlaceholderText("jmeno@email.cz")
+        self.email_edit.setMinimumHeight(35)
+        self.email_edit.setMinimumWidth(250)
         form_layout.addRow("Email:", self.email_edit)
         
         self.address_edit = QTextEdit()
         self.address_edit.setPlaceholderText("Adresa bydliště")
-        self.address_edit.setMaximumHeight(60)
+        self.address_edit.setMaximumHeight(80)
+        self.address_edit.setMinimumHeight(60)
+        self.address_edit.setMinimumWidth(250)
         form_layout.addRow("Adresa:", self.address_edit)
         
         # Pracovní údaje
         work_label = QLabel("💼 Pracovní údaje")
-        work_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #9b59b6; margin-top: 15px;")
+        work_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #9b59b6; margin-top: 15px;")
         form_layout.addRow(work_label)
         
         self.position_edit = QLineEdit()
         self.position_edit.setPlaceholderText("Název pozice")
+        self.position_edit.setMinimumHeight(35)
+        self.position_edit.setMinimumWidth(250)
         form_layout.addRow("Pozice:", self.position_edit)
         
         self.department_edit = QLineEdit()
         self.department_edit.setPlaceholderText("Název oddělení")
+        self.department_edit.setMinimumHeight(35)
+        self.department_edit.setMinimumWidth(250)
         form_layout.addRow("Oddělení:", self.department_edit)
         
         self.hire_date_edit = QDateEdit(QDate.currentDate())
         self.hire_date_edit.setCalendarPopup(True)
+        self.hire_date_edit.setMinimumHeight(35)
+        self.hire_date_edit.setMinimumWidth(250)
         form_layout.addRow("Datum nástupu:", self.hire_date_edit)
         
         self.salary_edit = QDoubleSpinBox()
         self.salary_edit.setMaximum(999999.99)
         self.salary_edit.setSuffix(" Kč")
+        self.salary_edit.setMinimumHeight(35)
+        self.salary_edit.setMinimumWidth(250)
         form_layout.addRow("Mzda:", self.salary_edit)
         
         self.active_check = QCheckBox("Aktivní zaměstnanec")
@@ -789,47 +818,56 @@ class SalaryManagementDialog(QDialog):
     def __init__(self, employees, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Správa mezd")
-        self.setFixedSize(500, 600)
+        self.setFixedSize(600, 700)  # Zvětšeno pro lepší zobrazení
         self.employees = employees
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QComboBox, QLineEdit, QDoubleSpinBox, QDateEdit, QCheckBox {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QComboBox:focus, QLineEdit:focus, QDoubleSpinBox:focus, QDateEdit:focus {
-                border-color: #9b59b6;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #bb76c6, stop:1 #9b59b6);
             }
             QCheckBox {
-                font-size: 12px;
+                font-size: 15px;
                 color: #2c3e50;
                 spacing: 8px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
         """)
         
@@ -932,38 +970,50 @@ class AttendanceDialog(QDialog):
     def __init__(self, employees, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Evidence docházky")
-        self.setFixedSize(500, 550)
+        self.setFixedSize(600, 700)  # Zvětšeno pro lepší zobrazení
         self.employees = employees
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QComboBox, QLineEdit, QSpinBox, QDateEdit, QTextEdit {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QComboBox:focus, QLineEdit:focus, QSpinBox:focus, QDateEdit:focus, QTextEdit:focus {
-                border-color: #9b59b6;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         

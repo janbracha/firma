@@ -295,7 +295,7 @@ class VehicleManagementWindow(QMainWindow):
         """Otevře moderní formulář pro přidání vozidla."""
         dialog = QDialog(self)
         dialog.setWindowTitle("➕ Přidat nové vozidlo")
-        dialog.setFixedSize(400, 350)
+        dialog.setFixedSize(550, 450)  # Zvětšeno pro lepší zobrazení
         dialog.setStyleSheet("""
             QDialog {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -304,17 +304,23 @@ class VehicleManagementWindow(QMainWindow):
             QLabel {
                 color: white;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit {
                 background: white;
                 border: 2px solid rgba(255,255,255,0.3);
                 border-radius: 8px;
-                padding: 10px;
-                font-size: 13px;
+                padding: 12px 15px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus {
                 border: 2px solid #3498db;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -322,9 +328,11 @@ class VehicleManagementWindow(QMainWindow):
                 color: white;
                 border: none;
                 border-radius: 8px;
-                padding: 12px;
+                padding: 12px 24px;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -344,22 +352,30 @@ class VehicleManagementWindow(QMainWindow):
 
         # Formulář
         form_layout = QFormLayout()
-        form_layout.setSpacing(12)
+        form_layout.setSpacing(15)
         
         registration_input = QLineEdit()
         registration_input.setPlaceholderText("1A2 3456")
+        registration_input.setMinimumHeight(35)
+        registration_input.setMinimumWidth(250)
         form_layout.addRow("Registrační značka:", registration_input)
 
         type_input = QLineEdit()
         type_input.setPlaceholderText("Osobní auto, nákladní...")
+        type_input.setMinimumHeight(35)
+        type_input.setMinimumWidth(250)
         form_layout.addRow("Typ vozidla:", type_input)
 
         owner_input = QLineEdit()
         owner_input.setPlaceholderText("Jméno vlastníka")
+        owner_input.setMinimumHeight(35)
+        owner_input.setMinimumWidth(250)
         form_layout.addRow("Vlastník:", owner_input)
 
         consumption_input = QLineEdit()
         consumption_input.setPlaceholderText("7.5")
+        consumption_input.setMinimumHeight(35)
+        consumption_input.setMinimumWidth(250)
         form_layout.addRow("Spotřeba (l/100km):", consumption_input)
 
         layout.addLayout(form_layout)
@@ -414,7 +430,7 @@ class VehicleManagementWindow(QMainWindow):
 
         dialog = QDialog(self)
         dialog.setWindowTitle("✏️ Upravit vozidlo")
-        dialog.setFixedSize(400, 350)
+        dialog.setFixedSize(550, 450)  # Zvětšeno pro lepší zobrazení
         dialog.setStyleSheet("""
             QDialog {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -423,17 +439,23 @@ class VehicleManagementWindow(QMainWindow):
             QLabel {
                 color: white;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit {
                 background: white;
                 border: 2px solid rgba(255,255,255,0.3);
                 border-radius: 8px;
-                padding: 10px;
-                font-size: 13px;
+                padding: 12px 15px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus {
                 border: 2px solid #e67e22;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -441,9 +463,11 @@ class VehicleManagementWindow(QMainWindow):
                 color: white;
                 border: none;
                 border-radius: 8px;
-                padding: 12px;
+                padding: 12px 24px;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -463,18 +487,26 @@ class VehicleManagementWindow(QMainWindow):
 
         # Formulář
         form_layout = QFormLayout()
-        form_layout.setSpacing(12)
+        form_layout.setSpacing(15)
         
         registration_input = QLineEdit(vehicle_data[0])
+        registration_input.setMinimumHeight(35)
+        registration_input.setMinimumWidth(250)
         form_layout.addRow("Registrační značka:", registration_input)
 
         type_input = QLineEdit(vehicle_data[1])
+        type_input.setMinimumHeight(35)
+        type_input.setMinimumWidth(250)
         form_layout.addRow("Typ vozidla:", type_input)
 
         owner_input = QLineEdit(vehicle_data[2])
+        owner_input.setMinimumHeight(35)
+        owner_input.setMinimumWidth(250)
         form_layout.addRow("Vlastník:", owner_input)
 
         consumption_input = QLineEdit(vehicle_data[3])
+        consumption_input.setMinimumHeight(35)
+        consumption_input.setMinimumWidth(250)
         form_layout.addRow("Spotřeba (l/100km):", consumption_input)
 
         layout.addLayout(form_layout)

@@ -290,7 +290,7 @@ class DestinationManagementWindow(QMainWindow):
         """Otevře moderní formulář pro přidání destinace."""
         dialog = QDialog(self)
         dialog.setWindowTitle("➕ Přidat novou destinaci")
-        dialog.setFixedSize(450, 400)
+        dialog.setFixedSize(550, 500)  # Zvětšeno pro lepší zobrazení
         dialog.setStyleSheet("""
             QDialog {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -299,17 +299,23 @@ class DestinationManagementWindow(QMainWindow):
             QLabel {
                 color: white;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit {
                 background: white;
                 border: 2px solid rgba(255,255,255,0.3);
                 border-radius: 8px;
-                padding: 10px;
-                font-size: 13px;
+                padding: 12px 15px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus {
                 border: 2px solid #3498db;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -317,9 +323,11 @@ class DestinationManagementWindow(QMainWindow):
                 color: white;
                 border: none;
                 border-radius: 8px;
-                padding: 12px;
+                padding: 12px 24px;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -339,26 +347,36 @@ class DestinationManagementWindow(QMainWindow):
 
         # Formulář
         form_layout = QFormLayout()
-        form_layout.setSpacing(12)
+        form_layout.setSpacing(15)
         
         start_input = QLineEdit()
         start_input.setPlaceholderText("Praha, Brno, Ostrava...")
+        start_input.setMinimumHeight(35)
+        start_input.setMinimumWidth(250)
         form_layout.addRow("Start:", start_input)
 
         destination_input = QLineEdit()
         destination_input.setPlaceholderText("Vídeň, Bratislava...")
+        destination_input.setMinimumHeight(35)
+        destination_input.setMinimumWidth(250)
         form_layout.addRow("Cíl:", destination_input)
 
         company_input = QLineEdit()
         company_input.setPlaceholderText("ABC s.r.o., Hlavní 123...")
+        company_input.setMinimumHeight(35)
+        company_input.setMinimumWidth(250)
         form_layout.addRow("Firma/Adresa:", company_input)
 
         distance_input = QLineEdit()
         distance_input.setPlaceholderText("150")
+        distance_input.setMinimumHeight(35)
+        distance_input.setMinimumWidth(250)
         form_layout.addRow("Vzdálenost (km):", distance_input)
 
         note_input = QLineEdit()
         note_input.setPlaceholderText("Poznámka k trase...")
+        note_input.setMinimumHeight(35)
+        note_input.setMinimumWidth(250)
         form_layout.addRow("Poznámka:", note_input)
 
         layout.addLayout(form_layout)
@@ -412,7 +430,7 @@ class DestinationManagementWindow(QMainWindow):
 
         dialog = QDialog(self)
         dialog.setWindowTitle("✏️ Upravit destinaci")
-        dialog.setFixedSize(450, 400)
+        dialog.setFixedSize(550, 500)  # Zvětšeno pro lepší zobrazení
         dialog.setStyleSheet("""
             QDialog {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -421,17 +439,23 @@ class DestinationManagementWindow(QMainWindow):
             QLabel {
                 color: white;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit {
                 background: white;
                 border: 2px solid rgba(255,255,255,0.3);
                 border-radius: 8px;
-                padding: 10px;
-                font-size: 13px;
+                padding: 12px 15px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus {
                 border: 2px solid #e67e22;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -439,9 +463,11 @@ class DestinationManagementWindow(QMainWindow):
                 color: white;
                 border: none;
                 border-radius: 8px;
-                padding: 12px;
+                padding: 12px 24px;
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -461,21 +487,31 @@ class DestinationManagementWindow(QMainWindow):
 
         # Formulář
         form_layout = QFormLayout()
-        form_layout.setSpacing(12)
+        form_layout.setSpacing(15)
         
         start_input = QLineEdit(destination_data[1])
+        start_input.setMinimumHeight(35)
+        start_input.setMinimumWidth(250)
         form_layout.addRow("Start:", start_input)
 
         destination_input = QLineEdit(destination_data[2])
+        destination_input.setMinimumHeight(35)
+        destination_input.setMinimumWidth(250)
         form_layout.addRow("Cíl:", destination_input)
 
         company_input = QLineEdit(destination_data[3])
+        company_input.setMinimumHeight(35)
+        company_input.setMinimumWidth(250)
         form_layout.addRow("Firma/Adresa:", company_input)
 
         distance_input = QLineEdit(destination_data[4])
+        distance_input.setMinimumHeight(35)
+        distance_input.setMinimumWidth(250)
         form_layout.addRow("Vzdálenost (km):", distance_input)
 
         note_input = QLineEdit(destination_data[5])
+        note_input.setMinimumHeight(35)
+        note_input.setMinimumWidth(250)
         form_layout.addRow("Poznámka:", note_input)
 
         layout.addLayout(form_layout)

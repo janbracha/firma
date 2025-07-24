@@ -1,0 +1,30 @@
+✅ OPRAVENO: Velikosti formulářových prvků ve fakturách
+=======================================================
+
+🔧 PROVEDENÉ ZMĚNY:
+
+1. 📏 ZVĚTŠENÍ FORMULÁŘOVÝCH PRVKŮ
+   - Minimální výška: 35px (z ~22px)
+   - Minimální šířka: 250px (z neurčené)
+   - Větší padding: 12px-15px (z 8px-10px)
+
+2. 🖋️ VYLEPŠENÝ FONT
+   - Větší font: 15px (z 14px)
+   - Přidána font-family: 'Inter', 'Roboto'
+   - Lepší kontrast: color: #2c3e50
+
+3. 📐 ZVĚTŠENÝ DIALOG
+   - Nová velikost: 650x800px (z 500x700px)
+   - Více prostoru pro formulářové prvky
+
+4. 🎯 DOTČENÉ DIALOGY
+   - ✅ Zařazení faktury do evidence (add_invoice)
+   - ✅ Upravit fakturu (edit_invoice)
+
+📋 VÝSLEDEK:
+- Všechny QLineEdit, QComboBox a QDateEdit prvky jsou nyní výrazně větší
+- Text je lépe čitelný díky většímu fontu a lepšímu kontrastu
+- Formulářové prvky mají konzistentní velikosti jako v dialogu tankování
+- Dialog má dostatek prostoru pro zobrazení všech prvků
+
+✨ Formulář je nyní mnohem uživatelsky přívětivější a čitelnější!

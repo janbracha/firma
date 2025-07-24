@@ -1,0 +1,38 @@
+✅ OPRAVENO: Velikosti formulářových prvků pro řidiče
+=========================================================
+
+🔧 PROVEDENÉ ZMĚNY:
+
+1. 📏 ZVĚTŠENÍ FORMULÁŘOVÝCH PRVKŮ
+   - Minimální výška: 35px (z ~22px)
+   - Minimální šířka: 250px (z neurčené)
+   - Větší padding: 12px-15px (z 10px)
+
+2. 🖋️ VYLEPŠENÝ FONT
+   - Velikost fontu: 15px (stále stejná velikost)
+   - Přidána font-family: 'Inter', 'Roboto'
+   - Lepší kontrast: color: #2c3e50
+
+3. 📐 ZVĚTŠENÝ DIALOG
+   - Nová velikost: 550x400px (z 400x300px)
+   - Více prostoru pro formulářové prvky
+
+4. 🎨 VYLEPŠENÉ STYLOVÁNÍ
+   - Lepší dropdown šipky pro ComboBox
+   - Konzistentní vzhled s formuláři faktur
+   - Lepší focus efekty
+
+5. 🎯 DOTČENÉ PRVKY
+   - ✅ Titul (QLineEdit)
+   - ✅ Jméno (QLineEdit) 
+   - ✅ Příjmení (QLineEdit)
+   - ✅ Pozice (QComboBox)
+   - ✅ Tlačítka Uložit/Zrušit
+
+📋 VÝSLEDEK:
+- Všechny formulářové prvky jsou nyní stejně velké jako u faktur
+- Text je perfektně čitelný díky většímu fontu a lepšímu kontrastu
+- Dialog má dostatek prostoru pro zobrazení všech prvků
+- Konzistentní vzhled napříč celou aplikací
+
+✨ Formuláře pro řidiče jsou nyní stejně uživatelsky přívětivé jako formuláře pro faktury!

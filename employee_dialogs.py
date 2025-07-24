@@ -12,42 +12,50 @@ class PositionChangeDialog(QDialog):
     def __init__(self, employees, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Změna pozice")
-        self.setFixedSize(500, 400)
+        self.setFixedSize(600, 500)  # Zvětšeno pro lepší zobrazení
         self.employees = employees
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QComboBox, QLineEdit, QSpinBox, QTextEdit {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QComboBox:focus, QLineEdit:focus, QSpinBox:focus, QTextEdit:focus {
-                border-color: #3498db;
+                border: 2px solid #9b59b6;
+                outline: none;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #3498db, stop:1 #2980b9);
+                    stop:0 #9b59b6, stop:1 #8e44ad);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #5dade2, stop:1 #3498db);
+                    stop:0 #bb76c6, stop:1 #9b59b6);
             }
         """)
         

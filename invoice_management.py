@@ -5,11 +5,6 @@ from PyQt6.QtWidgets import (
     QTableWidget, QPushButton, QTableWidgetItem, QFrame, QScrollArea, QGridLayout
 )
 from PyQt6.QtGui import QFont
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import mm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, PageBreak
 
 from companies import fetch_company_names
 from database import fetch_all_invoices
@@ -88,8 +83,6 @@ class InvoiceManagementWindow(QMainWindow):
             ("➕ Zařazení faktury do evidence", "Evidovat novou fakturu v systému", self.add_invoice),
             ("✏️ Upravit fakturu", "Upravit vybranou fakturu", self.edit_invoice),
             ("🗑️ Smazat fakturu", "Odstranit fakturu ze systému", self.delete_invoice),
-            ("📄 Export do PDF", "Exportovat vybranou fakturu", self.export_to_pdf),
-            ("📚 Export všech", "Exportovat všechny faktury", self.export_all_to_pdf),
         ]
         
         for i, (title, desc, func) in enumerate(actions):
@@ -323,10 +316,14 @@ class InvoiceManagementWindow(QMainWindow):
 
         invoice_number_input = QLineEdit()
         invoice_number_input.setObjectName("modernInput")
+        invoice_number_input.setMinimumHeight(35)
+        invoice_number_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Číslo faktury:"), invoice_number_input)
 
         type_box = QComboBox()
         type_box.setObjectName("modernCombo")
+        type_box.setMinimumHeight(35)
+        type_box.setMinimumWidth(250)
         type_box.addItems(["Přijatá", "Vydaná"])
         form_layout.addRow(self.create_label("Typ faktury:"), type_box)
 
@@ -334,51 +331,71 @@ class InvoiceManagementWindow(QMainWindow):
 
         recipient_box = QComboBox()
         recipient_box.setObjectName("modernCombo")
+        recipient_box.setMinimumHeight(35)
+        recipient_box.setMinimumWidth(250)
         recipient_box.addItems(company_names)
         form_layout.addRow(self.create_label("Příjemce:"), recipient_box)
 
         issuer_box = QComboBox()
         issuer_box.setObjectName("modernCombo")
+        issuer_box.setMinimumHeight(35)
+        issuer_box.setMinimumWidth(250)
         issuer_box.addItems(company_names)
         form_layout.addRow(self.create_label("Výdejce:"), issuer_box)
 
         issue_date = QDateEdit()
         issue_date.setObjectName("modernDate")
+        issue_date.setMinimumHeight(35)
+        issue_date.setMinimumWidth(250)
         issue_date.setCalendarPopup(True)
         issue_date.setDate(QDate.currentDate())
         form_layout.addRow(self.create_label("Datum vystavení:"), issue_date)
 
         tax_date = QDateEdit()
         tax_date.setObjectName("modernDate")
+        tax_date.setMinimumHeight(35)
+        tax_date.setMinimumWidth(250)
         tax_date.setCalendarPopup(True)
         tax_date.setDate(QDate.currentDate())
         form_layout.addRow(self.create_label("Datum plnění:"), tax_date)
 
         due_date = QDateEdit()
         due_date.setObjectName("modernDate")
+        due_date.setMinimumHeight(35)
+        due_date.setMinimumWidth(250)
         due_date.setCalendarPopup(True)
         due_date.setDate(QDate.currentDate())
         form_layout.addRow(self.create_label("Datum splatnosti:"), due_date)
 
         amount_input = QLineEdit()
         amount_input.setObjectName("modernInput")
+        amount_input.setMinimumHeight(35)
+        amount_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Částka bez DPH:"), amount_input)
 
         tax_input = QLineEdit()
         tax_input.setObjectName("modernInput")
+        tax_input.setMinimumHeight(35)
+        tax_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Částka DPH:"), tax_input)
 
         total_input = QLineEdit()
         total_input.setObjectName("modernInput")
+        total_input.setMinimumHeight(35)
+        total_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Celková částka:"), total_input)
 
         status_box = QComboBox()
         status_box.setObjectName("modernCombo")
+        status_box.setMinimumHeight(35)
+        status_box.setMinimumWidth(250)
         status_box.addItems(["Čeká na platbu", "Zaplaceno", "Stornováno"])
         form_layout.addRow(self.create_label("Status faktury:"), status_box)
 
         note_input = QLineEdit()
         note_input.setObjectName("modernInput")
+        note_input.setMinimumHeight(35)
+        note_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Poznámka:"), note_input)
 
         layout.addWidget(form_frame)
@@ -428,7 +445,7 @@ class InvoiceManagementWindow(QMainWindow):
         """Vytvoří moderní dialog s hlavičkou"""
         dialog = QDialog(self)
         dialog.setWindowTitle(title)
-        dialog.setFixedSize(500, 700)
+        dialog.setFixedSize(650, 800)  # Zvětšeno pro lepší zobrazení formulářových prvků
         dialog.setModal(True)
         
         main_layout = QVBoxLayout(dialog)
@@ -510,15 +527,20 @@ class InvoiceManagementWindow(QMainWindow):
             #formLabel {
                 font-weight: bold;
                 color: #2c3e50;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             
             #modernInput {
-                padding: 10px;
+                padding: 12px 15px;
                 border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
+                min-height: 20px;
+                min-width: 200px;
+                color: #2c3e50;
             }
             
             #modernInput:focus {
@@ -527,23 +549,42 @@ class InvoiceManagementWindow(QMainWindow):
             }
             
             #modernCombo {
-                padding: 8px;
+                padding: 12px 15px;
                 border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
+                min-height: 20px;
+                min-width: 200px;
+                color: #2c3e50;
             }
             
             #modernCombo:focus {
                 border: 2px solid #3498db;
             }
             
+            #modernCombo::drop-down {
+                border: none;
+                width: 20px;
+            }
+            
+            #modernCombo::down-arrow {
+                image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEwIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik01IDZMMCAwTDEwIDBMNSA2WiIgZmlsbD0iIzY5NzI4OSIvPgo8L3N2Zz4K);
+                width: 10px;
+                height: 6px;
+            }
+            
             #modernDate {
-                padding: 8px;
+                padding: 12px 15px;
                 border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 14px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
+                min-height: 20px;
+                min-width: 200px;
+                color: #2c3e50;
             }
             
             #modernDate:focus {
@@ -688,10 +729,14 @@ class InvoiceManagementWindow(QMainWindow):
 
         invoice_number_input = QLineEdit(invoice_data[1])
         invoice_number_input.setObjectName("modernInput")
+        invoice_number_input.setMinimumHeight(35)
+        invoice_number_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Číslo faktury:"), invoice_number_input)
 
         type_box = QComboBox()
         type_box.setObjectName("modernCombo")
+        type_box.setMinimumHeight(35)
+        type_box.setMinimumWidth(250)
         type_box.addItems(["Přijatá", "Vydaná"])
         type_box.setCurrentText(invoice_data[2])
         form_layout.addRow(self.create_label("Typ faktury:"), type_box)
@@ -700,54 +745,74 @@ class InvoiceManagementWindow(QMainWindow):
         
         recipient_box = QComboBox()
         recipient_box.setObjectName("modernCombo")
+        recipient_box.setMinimumHeight(35)
+        recipient_box.setMinimumWidth(250)
         recipient_box.addItems(company_names)
         recipient_box.setCurrentText(invoice_data[3])
         form_layout.addRow(self.create_label("Příjemce:"), recipient_box)
 
         issuer_box = QComboBox()
         issuer_box.setObjectName("modernCombo")
+        issuer_box.setMinimumHeight(35)
+        issuer_box.setMinimumWidth(250)
         issuer_box.addItems(company_names)
         issuer_box.setCurrentText(invoice_data[4])
         form_layout.addRow(self.create_label("Výdejce:"), issuer_box)
 
         issue_date = QDateEdit()
         issue_date.setObjectName("modernDate")
+        issue_date.setMinimumHeight(35)
+        issue_date.setMinimumWidth(250)
         issue_date.setCalendarPopup(True)
         issue_date.setDate(QDate.fromString(invoice_data[5], "yyyy-MM-dd"))
         form_layout.addRow(self.create_label("Datum vystavení:"), issue_date)
 
         tax_date = QDateEdit()
         tax_date.setObjectName("modernDate")
+        tax_date.setMinimumHeight(35)
+        tax_date.setMinimumWidth(250)
         tax_date.setCalendarPopup(True)
         tax_date.setDate(QDate.fromString(invoice_data[6], "yyyy-MM-dd"))
         form_layout.addRow(self.create_label("Datum plnění:"), tax_date)
 
         due_date = QDateEdit()
         due_date.setObjectName("modernDate")
+        due_date.setMinimumHeight(35)
+        due_date.setMinimumWidth(250)
         due_date.setCalendarPopup(True)
         due_date.setDate(QDate.fromString(invoice_data[7], "yyyy-MM-dd"))
         form_layout.addRow(self.create_label("Datum splatnosti:"), due_date)
 
         amount_input = QLineEdit(str(invoice_data[8]))
         amount_input.setObjectName("modernInput")
+        amount_input.setMinimumHeight(35)
+        amount_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Částka bez DPH:"), amount_input)
 
         tax_input = QLineEdit(str(invoice_data[9]))
         tax_input.setObjectName("modernInput")
+        tax_input.setMinimumHeight(35)
+        tax_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Částka DPH:"), tax_input)
 
         total_input = QLineEdit(str(invoice_data[10]))
         total_input.setObjectName("modernInput")
+        total_input.setMinimumHeight(35)
+        total_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Celková částka:"), total_input)
 
         status_box = QComboBox()
         status_box.setObjectName("modernCombo")
+        status_box.setMinimumHeight(35)
+        status_box.setMinimumWidth(250)
         status_box.addItems(["Čeká na platbu", "Zaplaceno", "Stornováno"])
         status_box.setCurrentText(str(invoice_data[11]))
         form_layout.addRow(self.create_label("Status faktury:"), status_box)
 
         note_input = QLineEdit(invoice_data[12])
         note_input.setObjectName("modernInput")
+        note_input.setMinimumHeight(35)
+        note_input.setMinimumWidth(250)
         form_layout.addRow(self.create_label("Poznámka:"), note_input)
 
         layout.addWidget(form_frame)
@@ -888,111 +953,6 @@ class InvoiceManagementWindow(QMainWindow):
             save_button.clicked.connect(save_changes)
             dialog.setLayout(layout)
             dialog.exec()
-
-    def export_to_pdf(self):
-        """Export vybrané faktury do PDF se stejným stylem jako v aplikaci."""
-        selected_row = self.table.currentRow()
-        if selected_row < 0:
-            QMessageBox.warning(self, "Chyba", "Nejdříve vyberte fakturu k exportu!")
-            return
-        
-        invoice_data = [self.table.item(selected_row, col).text() for col in range(self.table.columnCount())]
-        filename = f"Faktura_{invoice_data[0]}.pdf"
-
-        doc = SimpleDocTemplate(filename, pagesize=A4)
-        elements = []
-
-        styles = getSampleStyleSheet()
-        title_style = styles["Title"]
-        title_style.fontName = "Helvetica-Bold"
-        title_style.fontSize = 18
-        title_style.textColor = colors.HexColor("#2C3E50")  # Tmavě modrá jako v aplikaci
-
-        normal_style = styles["Normal"]
-        normal_style.fontSize = 12
-        normal_style.textColor = colors.HexColor("#2C3E50")
-
-        elements.append(Paragraph(f"Faktura č. {invoice_data[1]}", title_style))
-        elements.append(Paragraph(f"Příjemce: {invoice_data[2]}", normal_style))
-        elements.append(Paragraph(f"Výdejce: {invoice_data[3]}", normal_style))
-        elements.append(Paragraph(f"Datum vystavení: {invoice_data[4]}", normal_style))
-        elements.append(Paragraph(f"Datum splatnosti: {invoice_data[5]}", normal_style))
-
-        table_data = [
-            ["Částka bez DPH", "Částka DPH", "Celkem", "Status"],
-            [invoice_data[7], invoice_data[8], invoice_data[9], invoice_data[10]]
-        ]
-
-        table = Table(table_data, colWidths=[50 * mm, 50 * mm, 50 * mm, 40 * mm])
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#6C85A3")),
-            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-            ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#F2F2F2")),
-            ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#6C85A3")),
-            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#6C85A3")),
-        ]))
-
-        elements.append(table)
-        doc.build(elements)
-
-        QMessageBox.information(self, "Export dokončen", f"Faktura byla exportována jako {filename}!")
-
-    def export_all_to_pdf(self):
-        """Export všech faktur do jednoho PDF souboru se stránkováním."""
-        rows = fetch_all_invoices()
-        if not rows:
-            QMessageBox.warning(self, "Chyba", "Žádné faktury k exportu!")
-            return
-        
-        export_path, _ = QFileDialog.getSaveFileName(self, "Uložit faktury jako PDF", "Všechny_faktury.pdf", "PDF Files (*.pdf)")
-        if not export_path:
-            return
-
-        doc = SimpleDocTemplate(export_path, pagesize=A4)
-        elements = []
-        styles = getSampleStyleSheet()
-        
-        title_style = styles["Title"]
-        title_style.fontName = "Helvetica-Bold"
-        title_style.fontSize = 18
-        title_style.textColor = colors.HexColor("#2C3E50")
-
-        normal_style = styles["Normal"]
-        normal_style.fontSize = 12
-        normal_style.textColor = colors.HexColor("#2C3E50")
-
-        for invoice_data in rows:
-            elements.append(Paragraph(f"Faktura č. {invoice_data[1]}", title_style))
-            elements.append(Paragraph(f"Příjemce: {invoice_data[2]}", normal_style))
-            elements.append(Paragraph(f"Výdejce: {invoice_data[3]}", normal_style))
-            elements.append(Paragraph(f"Datum vystavení: {invoice_data[5]}", normal_style))
-            elements.append(Paragraph(f"Datum splatnosti: {invoice_data[6]}", normal_style))
-
-            table_data = [
-                ["Částka bez DPH", "Částka DPH", "Celkem", "Status"],
-                [invoice_data[8], invoice_data[9], invoice_data[10], invoice_data[11]]
-            ]
-
-            table = Table(table_data, colWidths=[50 * mm, 50 * mm, 50 * mm, 40 * mm])
-            table.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#6C85A3")),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-                ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#F2F2F2")),
-                ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#6C85A3")),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#6C85A3")),
-            ]))
-
-            elements.append(table)
-            elements.append(PageBreak())  # Oddělení faktur na nové stránky
-
-        doc.build(elements)
-        QMessageBox.information(self, "Export dokončen", f"Všechny faktury byly exportovány jako {export_path}!")
 
     def delete_invoice(self):
         """Smaže vybranou fakturu po potvrzení uživatelem."""

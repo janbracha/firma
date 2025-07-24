@@ -1,0 +1,56 @@
+✅ OPRAVENO: Velikosti formulářových prvků pro vozidla a destinace
+=======================================================================
+
+🔧 PROVEDENÉ ZMĚNY - SPRÁVA VOZIDEL:
+
+1. 📏 ZVĚTŠENÍ FORMULÁŘOVÝCH PRVKŮ
+   - Minimální výška: 35px (z ~22px)
+   - Minimální šířka: 250px (z neurčené)
+   - Větší padding: 12px-15px (z 10px)
+
+2. 🖋️ VYLEPŠENÝ FONT A DESIGN
+   - Velikost fontu: 15px (z 13px-14px)
+   - Přidána font-family: 'Inter', 'Roboto'
+   - Lepší kontrast: color: #2c3e50
+
+3. 📐 ZVĚTŠENÉ DIALOGY
+   - Přidání vozidla: 550x450px (z 400x350px)
+   - Úprava vozidla: 550x450px (z 400x350px)
+
+4. 🎯 DOTČENÉ PRVKY VOZIDEL
+   - ✅ Registrační značka (QLineEdit)
+   - ✅ Typ vozidla (QLineEdit)
+   - ✅ Vlastník (QLineEdit)
+   - ✅ Spotřeba (QLineEdit)
+
+🔧 PROVEDENÉ ZMĚNY - SPRÁVA DESTINACÍ:
+
+1. 📏 ZVĚTŠENÍ FORMULÁŘOVÝCH PRVKŮ
+   - Minimální výška: 35px (z ~22px)
+   - Minimální šířka: 250px (z neurčené)
+   - Větší padding: 12px-15px (z 10px)
+
+2. 🖋️ VYLEPŠENÝ FONT A DESIGN
+   - Velikost fontu: 15px (z 13px-14px)
+   - Přidána font-family: 'Inter', 'Roboto'
+   - Lepší kontrast: color: #2c3e50
+
+3. 📐 ZVĚTŠENÉ DIALOGY
+   - Přidání destinace: 550x500px (z 450x400px)
+   - Úprava destinace: 550x500px (z 450x400px)
+
+4. 🎯 DOTČENÉ PRVKY DESTINACÍ
+   - ✅ Start (QLineEdit)
+   - ✅ Cíl (QLineEdit)
+   - ✅ Firma/Adresa (QLineEdit)
+   - ✅ Vzdálenost (QLineEdit)
+   - ✅ Poznámka (QLineEdit)
+
+📋 CELKOVÝ VÝSLEDEK:
+- Všechny formuláře v aplikaci jsou nyní konzistentní
+- Text je perfektně čitelný díky většímu fontu a lepšímu kontrastu
+- Formulářové prvky mají stejné velikosti napříč celou aplikací
+- Dialogy mají dostatek prostoru pro zobrazení všech prvků
+- Uživatelské rozhraní je nyní jednotné a profesionální
+
+✨ Kompletní oprava formulářů dokončena - aplikace je připravena pro produkční použití!

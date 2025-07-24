@@ -21,6 +21,7 @@ from calendar_schedule import CalendarScheduleWindow
 from warehouse_management import WarehouseManagementWindow
 from employee_management import EmployeeManagementWindow
 from service_maintenance import ServiceMaintenanceWindow
+from documentation_window import DocumentationWindow
 
 class InvoiceApp(QMainWindow):
     def __init__(self):
@@ -33,6 +34,7 @@ class InvoiceApp(QMainWindow):
         self.company_settings_window = None
         self.user_management_window = None
         self.role_management_window = None
+        self.documentation_window = None
         
         self.setWindowTitle("Správa firmy - Projekt & Develop s.r.o.")
         self.setGeometry(200, 200, 900, 700)
@@ -244,6 +246,16 @@ class InvoiceApp(QMainWindow):
             card = self.create_function_card("🔧 Servis a údržba", 
                                             "Plánování a evidence servisu", 
                                             self.show_service_maintenance)
+            basic_grid.addWidget(card, row, col)
+            col += 1
+            
+            # Nápověda a dokumentace - dostupná pro všechny uživatele
+            if col >= 2:
+                row += 1
+                col = 0
+            card = self.create_function_card("📚 Nápověda a návody", 
+                                            "Kompletní dokumentace aplikace", 
+                                            self.show_user_guide)
             basic_grid.addWidget(card, row, col)
             
             basic_frame.layout().addLayout(basic_grid)
@@ -504,6 +516,14 @@ class InvoiceApp(QMainWindow):
         # Nápověda menu
         help_menu = menubar.addMenu('Nápověda')
         
+        # Uživatelský návod
+        user_guide_action = QAction('📚 Uživatelský návod', self)
+        user_guide_action.setShortcut("F1")
+        user_guide_action.triggered.connect(self.show_user_guide)
+        help_menu.addAction(user_guide_action)
+        
+        help_menu.addSeparator()
+        
         about_action = QAction('O aplikaci', self)
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
@@ -531,6 +551,13 @@ class InvoiceApp(QMainWindow):
                          "Správa firmy v1.0\n"
                          "Projekt & Develop s.r.o.\n\n"
                          "Systém pro správu faktur, firem a účetnictví.")
+    
+    def show_user_guide(self):
+        """Zobrazí okno s uživatelským návodem"""
+        if not hasattr(self, 'documentation_window') or not self.documentation_window:
+            self.documentation_window = DocumentationWindow()
+        self.documentation_window.show()
+        self.documentation_window.raise_()  # Přenese okno do popředí
     
     def show_company_settings(self):
         """Zobrazí nastavení firmy"""

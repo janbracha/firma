@@ -387,37 +387,54 @@ class DriverDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Řidič")
-        self.setFixedSize(400, 300)
+        self.setFixedSize(550, 400)  # Zvětšeno pro lepší zobrazení
         self.setStyleSheet("""
             QDialog {
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
+                font-family: 'Inter', 'Roboto', sans-serif;
             }
             QLineEdit, QComboBox {
-                padding: 10px;
-                border: 2px solid #e1e8ed;
+                padding: 12px 15px;
+                border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
                 background: white;
                 margin-bottom: 10px;
+                min-height: 20px;
+                min-width: 250px;
+                color: #2c3e50;
             }
             QLineEdit:focus, QComboBox:focus {
-                border-color: #3498db;
+                border: 2px solid #3498db;
+                outline: none;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 20px;
+            }
+            QComboBox::down-arrow {
+                image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iNiIgdmlld0JveD0iMCAwIDEwIDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik01IDZMMCAwTDEwIDBMNSA2WiIgZmlsbD0iIzY5NzI4OSIvPgo8L3N2Zz4K);
+                width: 10px;
+                height: 6px;
             }
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #3498db, stop:1 #2980b9);
                 color: white;
                 border: none;
-                padding: 12px;
+                padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 15px;
+                font-family: 'Inter', 'Roboto', sans-serif;
+                min-height: 20px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -445,21 +462,29 @@ class DriverDialog(QDialog):
         
         # Formulář
         form_layout = QFormLayout()
-        form_layout.setSpacing(10)
+        form_layout.setSpacing(15)
         
         self.title_edit = QLineEdit()
         self.title_edit.setPlaceholderText("Např. Ing., Mgr.")
+        self.title_edit.setMinimumHeight(35)
+        self.title_edit.setMinimumWidth(250)
         form_layout.addRow("Titul:", self.title_edit)
         
         self.name_edit = QLineEdit()
         self.name_edit.setPlaceholderText("Zadejte jméno")
+        self.name_edit.setMinimumHeight(35)
+        self.name_edit.setMinimumWidth(250)
         form_layout.addRow("Jméno:", self.name_edit)
         
         self.surname_edit = QLineEdit()
         self.surname_edit.setPlaceholderText("Zadejte příjmení")
+        self.surname_edit.setMinimumHeight(35)
+        self.surname_edit.setMinimumWidth(250)
         form_layout.addRow("Příjmení:", self.surname_edit)
         
         self.role_combo = QComboBox()
+        self.role_combo.setMinimumHeight(35)
+        self.role_combo.setMinimumWidth(250)
         self.role_combo.addItems([
             "Řidič",
             "Hlavní řidič", 
