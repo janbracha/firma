@@ -655,8 +655,13 @@ class UserManagementWindow(QMainWindow):
     
     def load_users(self):
         """Načte seznam uživatelů"""
+        # Blokujeme signály během aktualizace tabulky
+        self.users_table.blockSignals(True)
+        
         users = UserManager.get_all_users()
         
+        # Nejprve vyčistíme obsah tabulky ale zachováme strukturu
+        self.users_table.setRowCount(0)
         self.users_table.setRowCount(len(users))
         
         for row, user in enumerate(users):
@@ -677,6 +682,12 @@ class UserManagementWindow(QMainWindow):
             self.users_table.setItem(row, 4, role_item)
             self.users_table.setItem(row, 5, status_item)
             self.users_table.setItem(row, 6, lastlogin_item)
+        
+        # Obnovíme signály
+        self.users_table.blockSignals(False)
+        
+        # Vyčistíme výběr
+        self.users_table.clearSelection()
     
     def on_selection_changed(self):
         """Zpracuje změnu výběru v tabulce - nepoužívá se v moderním stylu s kartami"""

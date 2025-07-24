@@ -447,6 +447,9 @@ class AnalyticsReportsWindow(QMainWindow):
     def load_summary_data(self, date_from, date_to):
         """Načte souhrnná data podle kategorií"""
         try:
+            # Blokujeme signály pro zabránění varování dataChanged
+            self.summary_table.blockSignals(True)
+            
             cursor = self.db.cursor()
             
             # Data pro souhrn
@@ -457,6 +460,8 @@ class AnalyticsReportsWindow(QMainWindow):
                 ("Výdaje pokladna", "cash_journal", "type = 'výdaj'", "amount"),
             ]
             
+            # Vyčistíme tabulku a nastavíme počet řádků
+            self.summary_table.clearContents()
             self.summary_table.setRowCount(len(summary_data))
             
             for row, (category, table, condition, amount_col) in enumerate(summary_data):
@@ -476,10 +481,16 @@ class AnalyticsReportsWindow(QMainWindow):
             
         except Exception as e:
             print(f"Chyba při načítání souhrnu: {e}")
+        finally:
+            # Obnovíme signály
+            self.summary_table.blockSignals(False)
     
     def load_top_clients(self, date_from, date_to):
         """Načte top klienty"""
         try:
+            # Blokujeme signály pro zabránění varování dataChanged
+            self.clients_table.blockSignals(True)
+            
             cursor = self.db.cursor()
             cursor.execute("""
                 SELECT recipient, COUNT(*) as count, SUM(total) as total_amount
@@ -491,6 +502,9 @@ class AnalyticsReportsWindow(QMainWindow):
             """, (date_from, date_to))
             
             clients = cursor.fetchall()
+            
+            # Vyčistíme tabulku a nastavíme počet řádků
+            self.clients_table.clearContents()
             self.clients_table.setRowCount(len(clients))
             
             for row, (client, count, total) in enumerate(clients):
@@ -500,6 +514,9 @@ class AnalyticsReportsWindow(QMainWindow):
                 
         except Exception as e:
             print(f"Chyba při načítání klientů: {e}")
+        finally:
+            # Obnovíme signály
+            self.clients_table.blockSignals(False)
     
     def load_monthly_data(self, date_from, date_to):
         """Načte měsíční data"""
@@ -549,6 +566,11 @@ class AnalyticsReportsWindow(QMainWindow):
                     current = current.replace(month=current.month + 1)
             
             # Zobrazení v tabulce
+            # Blokujeme signály pro zabránění varování dataChanged
+            self.monthly_table.blockSignals(True)
+            
+            # Vyčistíme tabulku a nastavíme počet řádků
+            self.monthly_table.clearContents()
             self.monthly_table.setRowCount(len(months))
             
             for row, (month, revenue, expenses, profit) in enumerate(months):
@@ -556,6 +578,9 @@ class AnalyticsReportsWindow(QMainWindow):
                 self.monthly_table.setItem(row, 1, QTableWidgetItem(f"{revenue:,.2f} Kč"))
                 self.monthly_table.setItem(row, 2, QTableWidgetItem(f"{expenses:,.2f} Kč"))
                 self.monthly_table.setItem(row, 3, QTableWidgetItem(f"{profit:,.2f} Kč"))
+            
+            # Obnovíme signály
+            self.monthly_table.blockSignals(False)
                 
         except Exception as e:
             print(f"Chyba při načítání měsíčních dat: {e}")

@@ -283,41 +283,51 @@ class CashJournalWindow(QMainWindow):
     
     def load_cash_journal(self):
         """Načte pokladní deník z databáze a vizuálně zvýrazní transakce barevným pozadím."""
-        conn = connect()
-        cursor = conn.cursor()
+        # Blokujeme signály pro zabránění varování dataChanged
+        self.table.blockSignals(True)
+        
+        try:
+            conn = connect()
+            cursor = conn.cursor()
 
-        cursor.execute("SELECT id, type, date, person, amount, note, balance FROM cash_journal ORDER BY date ASC")
-        rows = cursor.fetchall()
-        conn.close()
+            cursor.execute("SELECT id, type, date, person, amount, note, balance FROM cash_journal ORDER BY date ASC")
+            rows = cursor.fetchall()
+            conn.close()
 
-        self.table.setRowCount(len(rows))
+            # Vyčistíme tabulku a nastavíme počet řádků
+            self.table.clearContents()
+            self.table.setRowCount(len(rows))
 
-        for row_idx, row in enumerate(rows):
-            for col_idx, value in enumerate(row):
-                item = QTableWidgetItem(str(value))
+            for row_idx, row in enumerate(rows):
+                for col_idx, value in enumerate(row):
+                    item = QTableWidgetItem(str(value))
 
-                # Barevné pozadí řádku podle typu transakce
-                if row[1] == "Příjem":  # Pokud je typ Příjem
-                    item.setBackground(QBrush(QColor("#C8E6C9")))  # Světle zelené pozadí
-                elif row[1] == "Výdaj":  # Pokud je typ Výdaj
-                    item.setBackground(QBrush(QColor("#FFCC80")))  # Světle oranžové pozadí
-                elif row[1] == "Počáteční stav":  # Pokud je typ Počáteční stav
-                    item.setBackground(QBrush(QColor("#E1BEE7")))  # Světle magenta pozadí
-                
-                # Zvýraznění aktuálního stavu pokladny (poslední řádek)
-                if col_idx == 6 and row_idx == len(rows) - 1:  
-                    item.setFont(QFont("Arial", 14, QFont.Weight.Bold))  
+                    # Barevné pozadí řádku podle typu transakce
+                    if row[1] == "Příjem":  # Pokud je typ Příjem
+                        item.setBackground(QBrush(QColor("#C8E6C9")))  # Světle zelené pozadí
+                    elif row[1] == "Výdaj":  # Pokud je typ Výdaj
+                        item.setBackground(QBrush(QColor("#FFCC80")))  # Světle oranžové pozadí
+                    elif row[1] == "Počáteční stav":  # Pokud je typ Počáteční stav
+                        item.setBackground(QBrush(QColor("#E1BEE7")))  # Světle magenta pozadí
                     
-                    # Barevné zvýraznění zůstatku (zelená pokud kladný, červená pokud záporný)
-                    if float(value) >= 0:
-                        item.setForeground(QBrush(QColor("green")))
-                    else:
-                        item.setForeground(QBrush(QColor("red")))
+                    # Zvýraznění aktuálního stavu pokladny (poslední řádek)
+                    if col_idx == 6 and row_idx == len(rows) - 1:  
+                        item.setFont(QFont("Arial", 14, QFont.Weight.Bold))  
+                        
+                        # Barevné zvýraznění zůstatku (zelená pokud kladný, červená pokud záporný)
+                        if float(value) >= 0:
+                            item.setForeground(QBrush(QColor("green")))
+                        else:
+                            item.setForeground(QBrush(QColor("red")))
 
-                self.table.setItem(row_idx, col_idx, item)
+                    self.table.setItem(row_idx, col_idx, item)
 
-        # Skryjeme ID sloupec
-        self.table.setColumnHidden(0, True)
+            # Skryjeme ID sloupec
+            self.table.setColumnHidden(0, True)
+            
+        finally:
+            # Obnovíme signály
+            self.table.blockSignals(False)
 
     def add_entry(self):
         """Otevře dialog pro přidání nového záznamu do pokladního deníku."""

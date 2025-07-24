@@ -661,6 +661,9 @@ class AnalysisDialog(QDialog):
     
     def load_analysis_data(self):
         """Načte data pro analýzu"""
+        # Blokujeme signály během aktualizace tabulky
+        self.analysis_table.blockSignals(True)
+        
         # Simulace dat pro analýzu
         analysis_data = [
             ("2024-01", "12", "1,890", "154.3", "6,890", "8.17"),
@@ -688,7 +691,11 @@ class AnalysisDialog(QDialog):
                         item.setForeground(Qt.GlobalColor.darkBlue)
                 elif col == 4:  # Náklady
                     item.setForeground(Qt.GlobalColor.darkMagenta)
+                
                 self.analysis_table.setItem(row, col, item)
+        
+        # Obnovíme signály
+        self.analysis_table.blockSignals(False)
         
         self.analysis_table.resizeColumnsToContents()
     

@@ -294,11 +294,20 @@ class InvoiceManagementWindow(QMainWindow):
     
     def load_invoices(self):
         """Načte faktury z databáze a zobrazí je v tabulce."""
-        rows = fetch_all_invoices()
-        self.table.setRowCount(len(rows))
-        for row_idx, row in enumerate(rows):
-            for col_idx, value in enumerate(row):
-                self.table.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
+        # Blokujeme signály pro zabránění varování dataChanged
+        self.table.blockSignals(True)
+        
+        try:
+            rows = fetch_all_invoices()
+            # Vyčistíme tabulku a nastavíme počet řádků
+            self.table.clearContents()
+            self.table.setRowCount(len(rows))
+            for row_idx, row in enumerate(rows):
+                for col_idx, value in enumerate(row):
+                    self.table.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
+        finally:
+            # Obnovíme signály
+            self.table.blockSignals(False)
 
     def add_invoice(self):
         """Otevře moderní dialogové okno pro přidání faktury"""
