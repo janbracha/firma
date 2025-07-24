@@ -201,15 +201,28 @@ class UserManager:
     
     @staticmethod
     def has_permission(user_role, required_permission):
-        """Kontrola oprávnění podle role"""
-        permissions = {
-            'admin': ['all'],  # Admin má přístup ke všemu
-            'accountant': ['invoices', 'companies', 'cash_journal', 'reports'],  # Účetní
-            'user': ['view_invoices', 'trip_book']  # Běžný uživatel
+        """Kontrola oprávnění podle role pomocí role_management"""
+        from role_management import RoleManager
+        
+        # Načtení oprávnění uživatele podle role
+        permissions = RoleManager.get_user_permissions(user_role)
+        
+        # Admin má přístup ke všemu
+        if user_role == 'admin':
+            return True
+            
+        # Kontrola konkrétního oprávnění
+        if required_permission in permissions:
+            return True
+            
+        # Zpětná kompatibilita se starým systémem
+        legacy_permissions = {
+            'accountant': ['invoices', 'companies', 'cash_journal', 'reports', 'trip_book'],
+            'user': ['view_invoices', 'trip_book']
         }
         
-        user_permissions = permissions.get(user_role, [])
-        return 'all' in user_permissions or required_permission in user_permissions
+        user_permissions = legacy_permissions.get(user_role, [])
+        return required_permission in user_permissions
 
 
 class LoginDialog(QDialog):

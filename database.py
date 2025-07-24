@@ -245,10 +245,64 @@ def create_tables():
         -- Účetnictví
         ('accounting.view', 'Zobrazit účetnictví', 'Přístup k účetním přehledům', 'accounting', datetime('now')),
         ('accounting.cash_journal', 'Pokladní deník', 'Správa pokladního deníku', 'accounting', datetime('now')),
+        ('accounting.analytics', 'Analýzy a reporty', 'Finanční analýzy a výkazy', 'accounting', datetime('now')),
         
         -- Správa firmy
         ('company.view', 'Zobrazit nastavení', 'Zobrazení nastavení firmy', 'company', datetime('now')),
-        ('company.edit', 'Upravit nastavení', 'Úprava nastavení firmy', 'company', datetime('now'))
+        ('company.edit', 'Upravit nastavení', 'Úprava nastavení firmy', 'company', datetime('now')),
+        ('company.manage', 'Správa firem', 'Správa firemních kontaktů a partnerů', 'company', datetime('now')),
+        
+        -- Dokumenty
+        ('documents.view', 'Zobrazit dokumenty', 'Zobrazení seznamu dokumentů', 'documents', datetime('now')),
+        ('documents.create', 'Nahrát dokumenty', 'Nahrávání nových dokumentů', 'documents', datetime('now')),
+        ('documents.edit', 'Upravit dokumenty', 'Úprava a přejmenování dokumentů', 'documents', datetime('now')),
+        ('documents.delete', 'Smazat dokumenty', 'Mazání dokumentů', 'documents', datetime('now')),
+        
+        -- Majetek
+        ('assets.view', 'Zobrazit majetek', 'Zobrazení hmotného majetku', 'assets', datetime('now')),
+        ('assets.create', 'Přidat majetek', 'Přidávání nového majetku', 'assets', datetime('now')),
+        ('assets.edit', 'Upravit majetek', 'Úprava údajů o majetku', 'assets', datetime('now')),
+        ('assets.delete', 'Smazat majetek', 'Vyřazení majetku', 'assets', datetime('now')),
+        
+        -- Doprava
+        ('transport.view', 'Zobrazit dopravu', 'Zobrazení knihy jízd', 'transport', datetime('now')),
+        ('transport.create', 'Zadat jízdu', 'Zadávání nových jízd', 'transport', datetime('now')),
+        ('transport.edit', 'Upravit jízdu', 'Úprava záznamů o jízdách', 'transport', datetime('now')),
+        ('transport.delete', 'Smazat jízdu', 'Mazání záznamů o jízdách', 'transport', datetime('now')),
+        ('transport.manage_drivers', 'Správa řidičů', 'Správa řidičů a vozidel', 'transport', datetime('now')),
+        ('transport.manage_vehicles', 'Správa vozidel', 'Správa vozového parku', 'transport', datetime('now')),
+        ('transport.manage_destinations', 'Správa destinací', 'Správa tras a destinací', 'transport', datetime('now')),
+        ('transport.fuel_management', 'Správa pohonných hmot', 'Evidence tankování', 'transport', datetime('now')),
+        
+        -- Kalendář
+        ('calendar.view', 'Zobrazit kalendář', 'Zobrazení kalendáře a termínů', 'calendar', datetime('now')),
+        ('calendar.create', 'Vytvořit událost', 'Vytváření nových událostí', 'calendar', datetime('now')),
+        ('calendar.edit', 'Upravit událost', 'Úprava kalendářních událostí', 'calendar', datetime('now')),
+        ('calendar.delete', 'Smazat událost', 'Mazání událostí', 'calendar', datetime('now')),
+        
+        -- Sklad
+        ('warehouse.view', 'Zobrazit sklad', 'Zobrazení skladových zásob', 'warehouse', datetime('now')),
+        ('warehouse.create', 'Přidat zboží', 'Přidávání nového zboží', 'warehouse', datetime('now')),
+        ('warehouse.edit', 'Upravit zboží', 'Úprava skladových položek', 'warehouse', datetime('now')),
+        ('warehouse.delete', 'Smazat zboží', 'Mazání skladových položek', 'warehouse', datetime('now')),
+        ('warehouse.inventory', 'Inventura', 'Provádění inventur', 'warehouse', datetime('now')),
+        
+        -- Zaměstnanci
+        ('employees.view', 'Zobrazit zaměstnance', 'Zobrazení seznamu zaměstnanců', 'employees', datetime('now')),
+        ('employees.create', 'Přidat zaměstnance', 'Přijímání nových zaměstnanců', 'employees', datetime('now')),
+        ('employees.edit', 'Upravit zaměstnance', 'Úprava údajů zaměstnanců', 'employees', datetime('now')),
+        ('employees.delete', 'Smazat zaměstnance', 'Ukončení pracovního poměru', 'employees', datetime('now')),
+        ('employees.contracts', 'Správa smluv', 'Správa pracovních smluv', 'employees', datetime('now')),
+        ('employees.training', 'Správa školení', 'Plánování a evidence školení', 'employees', datetime('now')),
+        ('employees.payroll', 'Mzdová agenda', 'Správa mezd a odměn', 'employees', datetime('now')),
+        
+        -- Servis a údržba
+        ('maintenance.view', 'Zobrazit servis', 'Zobrazení plánů servisu', 'maintenance', datetime('now')),
+        ('maintenance.create', 'Naplánovat servis', 'Plánování nových servisů', 'maintenance', datetime('now')),
+        ('maintenance.edit', 'Upravit servis', 'Úprava servisních plánů', 'maintenance', datetime('now')),
+        ('maintenance.delete', 'Smazat servis', 'Zrušení servisních plánů', 'maintenance', datetime('now')),
+        ('maintenance.costs', 'Náklady servisu', 'Správa nákladů na servis', 'maintenance', datetime('now')),
+        ('maintenance.certificates', 'Certifikáty', 'Správa certifikátů a kontrol', 'maintenance', datetime('now'))
     """)
 
     # Přiřazení oprávnění rolím
@@ -266,8 +320,16 @@ def create_tables():
         WHERE r.name = 'accountant' 
         AND p.name IN (
             'invoices.view', 'invoices.create', 'invoices.edit', 'invoices.delete',
-            'accounting.view', 'accounting.cash_journal',
-            'company.view'
+            'accounting.view', 'accounting.cash_journal', 'accounting.analytics',
+            'company.view', 'company.manage',
+            'documents.view', 'documents.create', 'documents.edit', 'documents.delete',
+            'assets.view', 'assets.create', 'assets.edit', 'assets.delete',
+            'transport.view', 'transport.create', 'transport.edit', 'transport.delete',
+            'transport.manage_drivers', 'transport.manage_vehicles', 'transport.manage_destinations', 'transport.fuel_management',
+            'calendar.view', 'calendar.create', 'calendar.edit', 'calendar.delete',
+            'warehouse.view', 'warehouse.create', 'warehouse.edit', 'warehouse.delete', 'warehouse.inventory',
+            'employees.view', 'employees.create', 'employees.edit', 'employees.contracts', 'employees.training', 'employees.payroll',
+            'maintenance.view', 'maintenance.create', 'maintenance.edit', 'maintenance.costs', 'maintenance.certificates'
         )
     """)
 
@@ -278,8 +340,15 @@ def create_tables():
         WHERE r.name = 'user'
         AND p.name IN (
             'invoices.view',
-            'accounting.view',
-            'company.view'
+            'accounting.view', 'accounting.analytics',
+            'company.view',
+            'documents.view', 'documents.create',
+            'assets.view',
+            'transport.view',
+            'calendar.view', 'calendar.create', 'calendar.edit',
+            'warehouse.view',
+            'employees.view',
+            'maintenance.view'
         )
     """)
 

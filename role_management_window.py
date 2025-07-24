@@ -274,7 +274,14 @@ class RoleManagementWindow(QMainWindow):
             'roles': 'Správa rolí',
             'invoices': 'Fakturace',
             'accounting': 'Účetnictví',
-            'company': 'Nastavení firmy'
+            'company': 'Nastavení firmy',
+            'documents': 'Správa dokumentů',
+            'assets': 'Správa majetku',
+            'transport': 'Doprava a logistika',
+            'calendar': 'Kalendář a termíny',
+            'warehouse': 'Skladové hospodářství',
+            'employees': 'Správa zaměstnanců',
+            'maintenance': 'Servis a údržba'
         }
         return module_names.get(module_name, module_name.capitalize())
     
