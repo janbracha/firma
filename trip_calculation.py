@@ -265,7 +265,7 @@ class TripCalculationWindow(QMainWindow):
             }
             
             #cardDescription {
-                font-size: 12px;
+                font-size: 14px;
                 color: #7f8c8d;
                 line-height: 1.3;
             }
@@ -544,7 +544,7 @@ class AnalysisDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -679,13 +679,15 @@ class AnalysisDialog(QDialog):
                 if col == 5:  # Průměrná spotřeba
                     consumption = float(value)
                     if consumption < 8.0:
-                        item.setStyleSheet("background-color: #e8f5e8; color: #2e7d32; font-weight: bold;")
+                        item.setBackground(Qt.GlobalColor.green)
+                        item.setForeground(Qt.GlobalColor.white)
                     elif consumption > 8.2:
-                        item.setStyleSheet("background-color: #ffebee; color: #c62828; font-weight: bold;")
+                        item.setBackground(Qt.GlobalColor.red)
+                        item.setForeground(Qt.GlobalColor.white)
                     else:
-                        item.setStyleSheet("font-weight: bold;")
+                        item.setForeground(Qt.GlobalColor.darkBlue)
                 elif col == 4:  # Náklady
-                    item.setStyleSheet("font-weight: bold; color: #e67e22;")
+                    item.setForeground(Qt.GlobalColor.darkMagenta)
                 self.analysis_table.setItem(row, col, item)
         
         self.analysis_table.resizeColumnsToContents()

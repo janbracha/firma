@@ -72,7 +72,7 @@ class DocumentManager:
         return True, ""
     
     @staticmethod
-    def upload_document(file_path, related_table=None, related_id=None, description="", uploaded_by=1):
+    def upload_document(file_path, related_table=None, related_id=None, description="", uploaded_by=1, target_directory=None):
         """Nahraje dokument do systému"""
         
         # Validace souboru
@@ -86,8 +86,12 @@ class DocumentManager:
             file_ext = Path(file_path).suffix.lower()
             unique_filename = f"{uuid.uuid4()}{file_ext}"
             
-            # Cílová cesta
-            documents_folder = DocumentManager.get_documents_folder()
+            # Cílová cesta - pokud není zadán target_directory, použije se výchozí
+            if target_directory and os.path.exists(target_directory):
+                documents_folder = target_directory
+            else:
+                documents_folder = DocumentManager.get_documents_folder()
+                
             target_path = os.path.join(documents_folder, unique_filename)
             
             # Kopírování souboru
@@ -215,7 +219,7 @@ class DocumentViewer(QWidget):
                 border: 2px solid #0078d4; 
                 background: white;
                 color: #000000;
-                font-size: 12px;
+                font-size: 14px;
                 font-family: 'Consolas', 'Courier New', monospace;
                 border-radius: 5px;
             }
@@ -501,11 +505,12 @@ class DocumentUploadDialog(QDialog):
         self.related_table = related_table
         self.related_id = related_id
         self.selected_files = []
+        self.target_directory = None  # Nová vlastnost pro cílový adresář
         self.init_ui()
     
     def init_ui(self):
         self.setWindowTitle("Nahrát dokumenty")
-        self.setGeometry(200, 200, 500, 400)
+        self.setGeometry(200, 200, 500, 500)
         
         layout = QVBoxLayout()
         
@@ -513,6 +518,20 @@ class DocumentUploadDialog(QDialog):
         info_label = QLabel("Přetáhněte soubory nebo použijte tlačítko pro výběr")
         info_label.setStyleSheet("padding: 10px; background: #f0f0f0; border-radius: 5px;")
         layout.addWidget(info_label)
+        
+        # Výběr cílového adresáře
+        folder_layout = QHBoxLayout()
+        folder_label = QLabel("Cílový adresář:")
+        self.folder_edit = QLineEdit()
+        self.folder_edit.setText(DocumentManager.get_documents_folder())  # Výchozí
+        self.folder_edit.setReadOnly(True)
+        folder_browse_btn = QPushButton("Procházet...")
+        folder_browse_btn.clicked.connect(self.select_target_directory)
+        
+        folder_layout.addWidget(folder_label)
+        folder_layout.addWidget(self.folder_edit)
+        folder_layout.addWidget(folder_browse_btn)
+        layout.addLayout(folder_layout)
         
         # Drag & Drop area
         self.drop_area = DropArea()
@@ -562,6 +581,18 @@ class DocumentUploadDialog(QDialog):
         if files:
             self.files_selected(files)
     
+    def select_target_directory(self):
+        """Otevře dialog pro výběr cílového adresáře"""
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            "Vyberte cílový adresář",
+            self.folder_edit.text()
+        )
+        
+        if directory:
+            self.folder_edit.setText(directory)
+            self.target_directory = directory
+    
     def files_selected(self, files):
         """Zpracuje vybrané soubory"""
         self.selected_files.extend(files)
@@ -583,12 +614,17 @@ class DocumentUploadDialog(QDialog):
         success_count = 0
         errors = []
         
+        # Použije vybraný cílový adresář nebo None pro výchozí
+        target_dir = self.target_directory if self.target_directory != DocumentManager.get_documents_folder() else None
+        
         for file_path in self.selected_files:
             success, message = DocumentManager.upload_document(
                 file_path, 
                 self.related_table, 
                 self.related_id, 
-                description
+                description,
+                1,  # uploaded_by
+                target_dir
             )
             
             if success:

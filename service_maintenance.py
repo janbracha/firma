@@ -328,7 +328,7 @@ class ServiceMaintenanceWindow(QMainWindow):
             }
             
             #statTitle {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: white;
                 margin-bottom: 5px;
@@ -347,7 +347,7 @@ class ServiceMaintenanceWindow(QMainWindow):
                 border: 1px solid rgba(231, 76, 60, 0.2);
                 border-radius: 8px;
                 gridline-color: rgba(231, 76, 60, 0.1);
-                font-size: 12px;
+                font-size: 16px;
                 selection-background-color: rgba(231, 76, 60, 0.2);
             }
             
@@ -618,7 +618,7 @@ class ServiceDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -627,7 +627,7 @@ class ServiceDialog(QDialog):
                 padding: 10px;
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 margin-bottom: 10px;
             }
@@ -642,7 +642,7 @@ class ServiceDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -753,7 +753,7 @@ class MaintenanceScheduleDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -762,7 +762,7 @@ class MaintenanceScheduleDialog(QDialog):
                 padding: 10px;
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 margin-bottom: 10px;
             }
@@ -777,7 +777,7 @@ class MaintenanceScheduleDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -865,7 +865,7 @@ class MalfunctionReportDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -874,7 +874,7 @@ class MalfunctionReportDialog(QDialog):
                 padding: 10px;
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 margin-bottom: 10px;
             }
@@ -889,7 +889,7 @@ class MalfunctionReportDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -976,7 +976,7 @@ class ServicePlanDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -1064,9 +1064,11 @@ class ServicePlanDialog(QDialog):
                 item = QTableWidgetItem(str(value))
                 if col == 3:  # Stav
                     if value == "Zpožděno":
-                        item.setStyleSheet("background-color: #ffebee; color: #c62828;")
+                        item.setBackground(Qt.GlobalColor.red)
+                        item.setForeground(Qt.GlobalColor.white)
                     elif value == "Dokončeno":
-                        item.setStyleSheet("background-color: #e8f5e8; color: #2e7d32;")
+                        item.setBackground(Qt.GlobalColor.green)
+                        item.setForeground(Qt.GlobalColor.white)
                 self.plan_table.setItem(row, col, item)
         
         self.plan_table.resizeColumnsToContents()
@@ -1088,7 +1090,7 @@ class ServiceCostsDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -1190,7 +1192,7 @@ class ServiceCostsDialog(QDialog):
             for col, value in enumerate(data):
                 item = QTableWidgetItem(str(value))
                 if col == 4:  # Náklady
-                    item.setStyleSheet("font-weight: bold; color: #e67e22;")
+                    item.setForeground(Qt.GlobalColor.darkMagenta)
                 self.costs_table.setItem(row, col, item)
         
         self.costs_table.resizeColumnsToContents()
@@ -1217,7 +1219,7 @@ class CertificateManagementDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -1266,7 +1268,7 @@ class CertificateManagementDialog(QDialog):
         
         # Upozornění
         warning_label = QLabel("⚠️ Vozidla s blížící se expirací:")
-        warning_label.setStyleSheet("font-size: 12px; font-weight: bold; color: #e74c3c; background: #ffebee; padding: 8px; border-radius: 5px;")
+        warning_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #e74c3c; background: #ffebee; padding: 8px; border-radius: 5px;")
         layout.addWidget(warning_label)
         
         # Tabulka certifikátů
@@ -1316,9 +1318,11 @@ class CertificateManagementDialog(QDialog):
                 item = QTableWidgetItem(str(value))
                 if col == 4:  # Stav
                     if "Expiruje" in value or "vyprší" in value:
-                        item.setStyleSheet("background-color: #ffebee; color: #c62828; font-weight: bold;")
+                        item.setBackground(Qt.GlobalColor.red)
+                        item.setForeground(Qt.GlobalColor.white)
                     elif value == "Platný":
-                        item.setStyleSheet("background-color: #e8f5e8; color: #2e7d32; font-weight: bold;")
+                        item.setBackground(Qt.GlobalColor.green)
+                        item.setForeground(Qt.GlobalColor.white)
                 self.certificates_table.setItem(row, col, item)
         
         self.certificates_table.resizeColumnsToContents()

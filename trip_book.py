@@ -232,7 +232,6 @@ class TripBookWindow(QMainWindow):
                     stop:0 rgba(255, 255, 255, 1.0),
                     stop:1 rgba(240, 248, 255, 1.0));
                 border: 2px solid rgba(108, 133, 163, 0.3);
-                transform: translateY(-2px);
             }
             
             #cardTitle {

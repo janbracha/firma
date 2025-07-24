@@ -311,7 +311,7 @@ class CalendarScheduleWindow(QMainWindow):
             }
             
             #cardDescription {
-                font-size: 12px;
+                font-size: 16px;
                 color: #7f8c8d;
                 line-height: 1.3;
             }
@@ -323,7 +323,7 @@ class CalendarScheduleWindow(QMainWindow):
                 border: 1px solid rgba(142, 68, 173, 0.2);
                 border-radius: 8px;
                 gridline-color: rgba(142, 68, 173, 0.1);
-                font-size: 12px;
+                font-size: 16px;
                 selection-background-color: rgba(142, 68, 173, 0.2);
             }
             
@@ -358,7 +358,7 @@ class CalendarScheduleWindow(QMainWindow):
                 padding: 10px 15px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
                 margin: 2px;
             }
             
@@ -697,7 +697,7 @@ class EventDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -706,7 +706,7 @@ class EventDialog(QDialog):
                 padding: 10px;
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 margin-bottom: 10px;
             }
@@ -725,7 +725,7 @@ class EventDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -819,7 +819,7 @@ class WeeklyViewDialog(QDialog):
             QTextEdit {
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 font-family: 'Courier New', monospace;
                 line-height: 1.4;
@@ -833,7 +833,7 @@ class WeeklyViewDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
                 min-width: 100px;
             }
             QPushButton:hover {

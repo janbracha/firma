@@ -240,7 +240,7 @@ class DriverManagementWindow(QMainWindow):
             }
             
             #cardDescription {
-                font-size: 12px;
+                font-size: 16px;
                 color: #7f8c8d;
                 line-height: 1.3;
             }
@@ -273,7 +273,7 @@ class DriverManagementWindow(QMainWindow):
                 padding: 10px;
                 border: none;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             
             QHeaderView::section:hover {
@@ -393,7 +393,7 @@ class DriverDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -402,7 +402,7 @@ class DriverDialog(QDialog):
                 padding: 10px;
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 margin-bottom: 10px;
             }
@@ -417,7 +417,7 @@ class DriverDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,

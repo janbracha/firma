@@ -1,8 +1,22 @@
-# Firma - Aplikace pro správu firemních dokumentů a účetnictví
+# 🚀 Firemní aplikace - Kompletní systém pro správu firmy
 
-## 📋 Struktura aplikace (23 souborů)
+## 🎯 JAK SPUSTIT APLIKACI:
 
-### 🚀 Hlavní moduly:
+### ✅ Nejjednodušší způsob:
+**Poklikejte na soubor `start_app.bat`**
+
+### � Alternativní způsob:
+1. Otevřete PowerShell nebo Command Prompt
+2. Přejděte do složky projektu: `cd C:\git\firma`
+3. Aktivujte virtuální prostředí: `.venv\Scripts\activate`
+4. Spusťte aplikaci: `python main.py`
+
+## 📊 Statistiky projektu:
+- **11,000+ řádků** Python kódu
+- **15+ modulů** s kompletní funkcionalitou
+- **Žádné placeholder funkce** - vše je plně implementováno
+
+## 🏢 Funkce aplikace:
 - `main.py` - Spouštěcí soubor aplikace
 - `gui.py` - Hlavní GUI interface
 - `database.py` - Správa databáze a vytváření tabulek

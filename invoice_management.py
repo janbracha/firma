@@ -501,14 +501,14 @@ class InvoiceManagementWindow(QMainWindow):
             #formLabel {
                 font-weight: bold;
                 color: #2c3e50;
-                font-size: 13px;
+                font-size: 14px;
             }
             
             #modernInput {
                 padding: 10px;
                 border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 13px;
+                font-size: 14px;
                 background: white;
             }
             
@@ -521,7 +521,7 @@ class InvoiceManagementWindow(QMainWindow):
                 padding: 8px;
                 border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 13px;
+                font-size: 14px;
                 background: white;
             }
             
@@ -533,7 +533,7 @@ class InvoiceManagementWindow(QMainWindow):
                 padding: 8px;
                 border: 2px solid rgba(108, 133, 163, 0.2);
                 border-radius: 8px;
-                font-size: 13px;
+                font-size: 14px;
                 background: white;
             }
             

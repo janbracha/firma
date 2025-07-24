@@ -232,7 +232,7 @@ class DestinationManagementWindow(QMainWindow):
             }
             
             #cardDescription {
-                font-size: 12px;
+                font-size: 16px;
                 color: #7f8c8d;
                 line-height: 1.3;
             }
@@ -265,7 +265,7 @@ class DestinationManagementWindow(QMainWindow):
                 padding: 10px;
                 border: none;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             
             QHeaderView::section:hover {

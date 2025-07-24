@@ -274,8 +274,10 @@ class UserManagementWindow(QMainWindow):
         actions = [
             ("➕ Přidat uživatele", "Vytvořit nový uživatelský účet", self.add_user),
             ("✏️ Upravit uživatele", "Upravit vybraný účet", self.edit_user),
-            ("🗑️ Smazat uživatele", "Odstranit uživatelský účet", self.delete_user),
-            ("🔐 Změnit heslo", "Změnit heslo uživatele", self.change_password),
+            ("� Změnit heslo", "Změnit heslo uživatele", self.change_password),
+            ("🟢 Aktivovat uživatele", "Znovu aktivovat neaktivní účet", self.activate_user),
+            ("🟡 Deaktivovat uživatele", "Dočasně deaktivovat účet", self.delete_user),
+            ("� Odstranit trvale", "Trvale smazat neaktivní účet", self.permanently_delete_user),
         ]
         
         for i, (title, desc, func) in enumerate(actions):
@@ -677,47 +679,15 @@ class UserManagementWindow(QMainWindow):
             self.users_table.setItem(row, 6, lastlogin_item)
     
     def on_selection_changed(self):
-        """Zpracuje změnu výběru v tabulce"""
-        self.update_button_states()
+        """Zpracuje změnu výběru v tabulce - nepoužívá se v moderním stylu s kartami"""
+        # V moderním stylu s kartami není potřeba aktualizovat stav tlačítek
+        pass
     
     def update_button_states(self):
-        """Aktualizuje stav tlačítek podle vybraného uživatele"""
-        selected_items = self.users_table.selectedItems()
-        has_selection = len(selected_items) > 0
-        
-        if has_selection:
-            current_row = self.users_table.currentRow()
-            if current_row >= 0:
-                # Získáme ID uživatele a role
-                user_id = int(self.users_table.item(current_row, 0).text())
-                role = self.users_table.item(current_row, 4).text()
-                status_text = self.users_table.item(current_row, 5).text()  # Sloupec "Stav"
-                is_admin = role == "admin"
-                is_active = status_text == "Aktivní"
-                
-                self.edit_user_button.setEnabled(True)
-                self.change_password_button.setEnabled(True)
-                
-                # Tlačítko pro aktivaci - pouze pro neaktivní uživatele
-                self.activate_user_button.setEnabled(not is_active)
-                
-                # Tlačítko pro deaktivaci - pro všechny aktivní uživatele (včetně adminů)
-                self.delete_user_button.setEnabled(is_active)
-                
-                # Tlačítko pro trvalé odstranění - pouze pro neaktivní uživatele
-                self.permanently_delete_button.setEnabled(not is_active)
-            else:
-                self.edit_user_button.setEnabled(False)
-                self.change_password_button.setEnabled(False)
-                self.activate_user_button.setEnabled(False)
-                self.delete_user_button.setEnabled(False)
-                self.permanently_delete_button.setEnabled(False)
-        else:
-            self.edit_user_button.setEnabled(False)
-            self.change_password_button.setEnabled(False)
-            self.activate_user_button.setEnabled(False)
-            self.delete_user_button.setEnabled(False)
-            self.permanently_delete_button.setEnabled(False)
+        """Aktualizuje stav tlačítek podle vybraného uživatele - nepoužívá se v moderním stylu s kartami"""
+        # V novém moderním stylu se používají karty místo tlačítek
+        # Tato metoda je zachována kvůli kompatibilitě, ale nic nedělá
+        pass
     
     def add_user(self):
         """Přidá nového uživatele"""
@@ -740,6 +710,8 @@ class UserManagementWindow(QMainWindow):
             if dialog.exec() == dialog.DialogCode.Accepted:
                 self.load_users()
                 self.update_button_states()
+        else:
+            QMessageBox.warning(self, "Chyba", "Nejprve vyberte uživatele v tabulce, kterého chcete upravit.")
     
     def change_password(self):
         """Změní heslo vybraného uživatele"""
@@ -750,6 +722,8 @@ class UserManagementWindow(QMainWindow):
             
             dialog = ChangePasswordDialog(user_id, username)
             dialog.exec()
+        else:
+            QMessageBox.warning(self, "Chyba", "Nejprve vyberte uživatele v tabulce, kterému chcete změnit heslo.")
     
     def activate_user(self):
         """Aktivuje deaktivovaného uživatele"""
@@ -757,6 +731,12 @@ class UserManagementWindow(QMainWindow):
         if current_row >= 0:
             user_id = int(self.users_table.item(current_row, 0).text())
             username = self.users_table.item(current_row, 1).text()
+            status_text = self.users_table.item(current_row, 5).text()
+            
+            # Kontrola, zda je uživatel neaktivní
+            if status_text == "Aktivní":
+                QMessageBox.warning(self, "Chyba", f"Uživatel {username} je již aktivní!")
+                return
             
             reply = QMessageBox.question(
                 self, 
@@ -772,6 +752,8 @@ class UserManagementWindow(QMainWindow):
                     self.update_button_states()  # Aktualizace stavů tlačítek
                 else:
                     QMessageBox.critical(self, "Chyba", "Nepodařilo se aktivovat uživatele!")
+        else:
+            QMessageBox.warning(self, "Chyba", "Nejprve vyberte neaktivního uživatele v tabulce, kterého chcete aktivovat.")
     
     def delete_user(self):
         """Smaže vybraného uživatele"""
@@ -798,6 +780,8 @@ class UserManagementWindow(QMainWindow):
                     self.update_button_states()  # Aktualizace stavů tlačítek
                 else:
                     QMessageBox.critical(self, "Chyba", "Nepodařilo se deaktivovat uživatele!")
+        else:
+            QMessageBox.warning(self, "Chyba", "Nejprve vyberte aktivního uživatele v tabulce, kterého chcete deaktivovat.")
     
     def permanently_delete_user(self):
         """Trvale odstraní vybraného uživatele"""
@@ -805,6 +789,12 @@ class UserManagementWindow(QMainWindow):
         if current_row >= 0:
             user_id = int(self.users_table.item(current_row, 0).text())
             username = self.users_table.item(current_row, 1).text()
+            status_text = self.users_table.item(current_row, 5).text()
+            
+            # Kontrola, zda je uživatel neaktivní
+            if status_text == "Aktivní":
+                QMessageBox.warning(self, "Chyba", f"Nelze trvale odstranit aktivního uživatele {username}!\n\nPrvním krokem jej deaktivujte a poté můžete provést trvalé odstranění.")
+                return
             
             reply = QMessageBox.question(
                 self, 
@@ -836,6 +826,8 @@ class UserManagementWindow(QMainWindow):
                         self.update_button_states()
                     else:
                         QMessageBox.critical(self, "Chyba", "Nepodařilo se trvale odstranit uživatele!")
+        else:
+            QMessageBox.warning(self, "Chyba", "Nejprve vyberte neaktivního uživatele v tabulce, kterého chcete trvale odstranit.")
 
 
 def main():

@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QPushButton, QComboBox, QSpinBox, QTextEdit, QLineEdit,
     QTableWidget, QTableWidgetItem, QMessageBox
 )
+from PyQt6.QtCore import Qt
 
 class PositionChangeDialog(QDialog):
     """Dialog pro změnu pozice zaměstnance"""
@@ -18,7 +19,7 @@ class PositionChangeDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -27,7 +28,7 @@ class PositionChangeDialog(QDialog):
                 padding: 10px;
                 border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 12px;
+                font-size: 16px;
                 background: white;
                 margin-bottom: 10px;
             }
@@ -42,7 +43,7 @@ class PositionChangeDialog(QDialog):
                 padding: 12px;
                 border-radius: 8px;
                 font-weight: bold;
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -125,7 +126,7 @@ class ContractManagementDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -222,9 +223,11 @@ class ContractManagementDialog(QDialog):
                 item = QTableWidgetItem(str(value))
                 if col == 4:  # Stav
                     if value == "Ukončená":
-                        item.setStyleSheet("background-color: #ffebee; color: #c62828;")
+                        item.setBackground(Qt.GlobalColor.red)
+                        item.setForeground(Qt.GlobalColor.white)
                     elif value == "Aktivní":
-                        item.setStyleSheet("background-color: #e8f5e8; color: #2e7d32;")
+                        item.setBackground(Qt.GlobalColor.green)
+                        item.setForeground(Qt.GlobalColor.white)
                 self.contracts_table.setItem(row, col, item)
         
         self.contracts_table.resizeColumnsToContents()
@@ -259,7 +262,7 @@ class TrainingManagementDialog(QDialog):
                 background-color: #f5f6fa;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin-bottom: 5px;
@@ -356,9 +359,11 @@ class TrainingManagementDialog(QDialog):
                 item = QTableWidgetItem(str(value))
                 if col == 3:  # Výsledek
                     if value == "Naplánováno":
-                        item.setStyleSheet("background-color: #fff3cd; color: #856404;")
+                        item.setBackground(Qt.GlobalColor.yellow)
+                        item.setForeground(Qt.GlobalColor.black)
                     elif value == "Úspěšně":
-                        item.setStyleSheet("background-color: #e8f5e8; color: #2e7d32;")
+                        item.setBackground(Qt.GlobalColor.green)
+                        item.setForeground(Qt.GlobalColor.white)
                 self.training_table.setItem(row, col, item)
         
         self.training_table.resizeColumnsToContents()
